@@ -35,7 +35,7 @@ boards(endgame,[[empty,empty,empty,empty,empty,empty,empty,empty,empty],
 			[empty,empty,empty,empty,empty,empty,empty,empty,empty]]).
 
 
-printColumnNames :-         write('      A     B     C     D     E     F     G     H     I   '),nl.
+printColumnNames :-      write('      A     B     C     D     E     F     G     H     I   '),nl.
 printInitialSeparator :- write('    _____________________________________________________ '),nl.
 printTopLine :-          write('   |     |     |     |     |     |     |     |     |     |'),nl.
 printFinalSeparator :-   write('   |_____|_____|_____|_____|_____|_____|_____|_____|_____|'),nl.
