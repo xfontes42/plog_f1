@@ -1,7 +1,7 @@
-jogarinicio(X, Y, , Board\_In, Board\_Out) :- jogar(X, Y, \textit{black}, Board\_In, Board\_Out).
-jogar(X, Y, \textit{cor da peça}, Board\_In, Board\_Out).
-jogar2(X, Y, \textit{cor da peça}, Board\_In, Board\_Out).
-checkCrossCut(X, Y, \textit{cor da peça}, Board\_In, Result).
+jogarinicio(X, Y, , Board_In, Board_Out) :- jogar(X, Y, black, Board_In, Board_Out).
+jogar(X, Y, Cor, Board_In, Board_Out).
+jogar2(X, Y, Cor, Board_In, Board_Out).
+checkCrossCut(X, Y, Cor, Board_In, Result).
 % partir disto acima para o jogo que queremos
 
 
