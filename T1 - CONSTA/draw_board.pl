@@ -46,3 +46,8 @@ printLineX(Numero,Lista) :- write(' '), X is Numero+48, put_code(X), write(' '),
 printFullLine(Numero,Lista) :- printTopLine, printLineX(Numero, Lista), printFinalSeparator.
 printBoardRecursive([Cabeca|Cauda],Numero) :- printFullLine(Numero,Cabeca), X is Numero+1, X<10, printBoardRecursive(Cauda,X).
 printBoard(Type) :- boards(Type,Board), printColumnNames, printInitialSeparator, printBoardRecursive(Board,1).
+
+
+verifyInput(X,Y) :- ((integer(X), integer(Y), X@>0, X@<10, Y@>0, Y@<10) -> true;write('Insira coordenadas validas!'),fail).
+
+test :- repeat, write('Insira as coordenadas(X,Y): '), read(X),write(X), read(Y),write(Y), verifyInput(X,Y).
