@@ -1,4 +1,5 @@
 :-include('menus.pl').
+:-include('utilities.pl').
 
 play_consta :- repeat, nl, presentation,
               write('Choose: '),
