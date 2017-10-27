@@ -1,0 +1,68 @@
+getPeca(Tabuleiro, Nlinha, NCol, Peca) :-
+    getElePos(NLinha, Tabuleiro, Linha),
+    getElePos(NCol, Linha, Peca).
+
+/* nLinha e nCol s�o decrementados a cada chamada. */
+
+getElePos(1, [Elemento|_], Elemento).
+
+getElePos(Pos, [_|Resto], Elemento) :-
+    Pos > 1,
+    Next is Pos-1,
+    getElePos(Next, Resto, Elemento).
+
+--------------------------------------------------------------
+
+setPeca(TabIn, NLinha, NCol, Peca, TabOut) :-
+    setNaLinha(NLinha, TabIn, NCol, Peca, TabOut).
+
+setNaLinha(1, [Linha|Resto], NCol, Peca, [NovaLinha|Resto]):-
+    setNaColuna(NCol, Linha, Peca, NovaLinha).
+
+setNaLinha(Pos, [Linha|Resto], NCol, Peca, [Linha|NovoResto]):-
+    Pos > 1,
+    Next is Pos-1,
+    setNaLinha(Next, Resto, NCol, Peca, NovaLinha).
+
+setNaColuna(1, [_|Resto], Peca, [Peca|Resto]).
+
+setNaColuna(Pos, [X|Resto], Peca, [X|NovoResto]):-
+    Pos > 1,
+    Next is Pos-1,
+    setNaColuna(Next, Resto Peca, NovoResto).
+
+
+--------------------------------------------------------------
+/* Usar biblioteca de listas */
+:-use_module(library(listas)).
+
+- nth1?
+- nth1(2,[a,b,c],X).
+    X=b
+- nth0(2,[a,b,c],X).
+    X=c
+
+---------------------------------------------------------------
+printBoard(Board) :-
+    printBlackLine,
+    printRowByRow(Board),
+    printBlackLine.
+
+printBlackLine :-
+    write('---------------------'),
+    nl.
+
+printRowByRow([]).
+printRowByRow([Line|Rest]) :-
+    printSingleRow(Line),
+    printRowByRow(Rest).
+
+printSingleRow([Cell]):-
+    write(Cell),
+    write('|'),
+    printBlackLine).
+
+printSingleRow([Cell|More]):-
+    write(Cell),
+    write('|'),
+    printSingleRow(More).

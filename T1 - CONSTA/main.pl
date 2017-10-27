@@ -1,3 +1,4 @@
+:-include('menus.pl').
 
 play_consta :- repeat, nl, presentation,
               write('Choose: '),
