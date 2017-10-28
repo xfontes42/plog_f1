@@ -34,25 +34,3 @@ jogar :- repeat,
 verifica_jogada :- verifica_limites,
                    verifica_tabuleiro,
                    verifica_crosscuts
-
-seleciona_tamanho_tab(Tamanho) :-repeat,
-    write('Selecione um tamanho de board entre 5 e 23.'),
-    once(le_numero(Tamanho)),
-    ite((Tamanho @>= 5, Tamanho@=< 23),true,(write('Tamanho de Board invalido!'),nl,fail)).
-
-seleciona_jogada(Tipo) :-repeat,
-    write('Selecione o tipo de jogada que pretende fazer \'s\' or \'d\' (Single or Double):'),
-    once(le_numero(Tipo)),
-    ite((Tipo == 52; Tipo == 67),true,(write('Tipo de jogada invalido!'),nl,fail)).
-
-seleciona_local(X,Y) :- repeat,
-    write('Selecione uma coordenada X:(_,_)'),
-    once(le_numero(X)),
-    ite((X @>= 17, X@=<40 ),true,(write('Coordenada X de Board invalida!'),nl,fail)),
-    LetraX is X+48,
-    repeat,
-    write('Selecione uma coordenada Y:('),put_code(LetraX),write(',_)'),
-    once(le_numero(Y)),
-    ite((Y @>= 0, Y@=<23 ),true,(write('Coordenada Y de Board invalida!'),nl,fail)),
-    LetraY is Y,
-    write('Coordenadas selecionadas ('),put_code(LetraX),write(', '),write(LetraY),write(').').

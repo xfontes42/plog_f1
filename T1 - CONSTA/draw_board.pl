@@ -1,53 +1,81 @@
+:-include('utilities.pl').
+
+% Dictionary to associate matrix values.
 getCharacter(black, 'b').
 getCharacter(black2, 'B').
 getCharacter(white, 'w').
 getCharacter(white2, 'W').
 getCharacter(empty, ' ').
 
-boards(empty,[[empty,empty,empty,empty,empty,empty,empty,empty,empty],
-			[empty,empty,empty,empty,empty,empty,empty,empty,empty],
-			[empty,empty,empty,empty,empty,empty,empty,empty,empty],
-			[empty,empty,empty,empty,empty,empty,empty,empty,empty],
-			[empty,empty,empty,empty,empty,empty,empty,empty,empty],
-			[empty,empty,empty,empty,empty,empty,empty,empty,empty],
-			[empty,empty,empty,empty,empty,empty,empty,empty,empty],
-			[empty,empty,empty,empty,empty,empty,empty,empty,empty],
-			[empty,empty,empty,empty,empty,empty,empty,empty,empty]]).
+% Print header.
+printHeader(_,0):- write(' '), nl.
+printHeader(Current,Missing):-
+	write('   '),
+	Letter is Current+65,
+	put_code(Letter),
+	write('  '),
+	Current2 is Current+1,
+	Missing2 is Missing-1,
+	printHeader(Current2,Missing2).
 
-boards(earlygame,[[empty,empty,empty,empty,empty,empty,empty,empty,empty],
-			[empty,empty,empty,empty,empty,empty,empty,empty,empty],
-			[empty,empty,empty,empty,empty,empty,empty,empty,empty],
-			[white2,empty,empty,empty,empty,empty,empty,white,empty],
-			[empty,empty,empty,empty,black2,empty,empty,empty,empty],
-			[empty,empty,empty,empty,empty,empty,empty,empty,empty],
-			[empty,empty,empty,empty,empty,empty,black,empty,empty],
-			[empty,empty,empty,empty,empty,empty,empty,empty,empty],
-			[empty,empty,empty,empty,empty,empty,empty,empty,empty]]).
+% Prints the initial separator of the board.
+printInitialSeparator(0):- write(' '), nl.
+printInitialSeparator(Number):-
+	write('_'),
+	Number2 is Number-1,
+	printInitialSeparator(Number2).
 
-boards(endgame,[[empty,empty,empty,empty,empty,empty,empty,empty,empty],
-			[empty,empty,empty,empty,empty,empty,black,empty,empty],
-			[empty,empty,empty,empty,white,white2,black,empty,empty],
-			[white2,white,white,white,white,black2,white2,white,white],
-			[empty,empty,empty,empty,black2,black,empty,empty,empty],
-			[empty,empty,empty,empty,empty,black,empty,empty,empty],
-			[empty,empty,empty,empty,empty,black,black,empty,empty],
-			[empty,empty,empty,empty,empty,empty,empty,empty,empty],
-			[empty,empty,empty,empty,empty,empty,empty,empty,empty]]).
+% Prints the top of a whole line.
+printTopLine(0):- write('|'), nl.
+printTopLine(Number):-
+	write('|     '),
+	Number2 is Number-1,
+	printTopLine(Number2).
 
-
-printColumnNames :-      write('      A     B     C     D     E     F     G     H     I   '),nl.
-printInitialSeparator :- write('    _____________________________________________________ '),nl.
-printTopLine :-          write('   |     |     |     |     |     |     |     |     |     |'),nl.
-printFinalSeparator :-   write('   |_____|_____|_____|_____|_____|_____|_____|_____|_____|'),nl.
-
+% Prints the line given recursively.
 printLineRecursive([]) :- write('|'),nl.
-printLineRecursive([Cabeca|Cauda]) :- write('|  '), getCharacter(Cabeca,Simbolo), put_char(Simbolo), write('  '), printLineRecursive(Cauda).
-printLineX(Numero,Lista) :- write(' '), X is Numero+48, put_code(X), write(' '), printLineRecursive(Lista).
-printFullLine(Numero,Lista) :- printTopLine, printLineX(Numero, Lista), printFinalSeparator.
-printBoardRecursive([Cabeca|Cauda],Numero) :- printFullLine(Numero,Cabeca), X is Numero+1, X<10, printBoardRecursive(Cauda,X).
-printBoard(Type) :- boards(Type,Board), printColumnNames, printInitialSeparator, printBoardRecursive(Board,1).
+printLineRecursive([Cabeca|Cauda]) :-
+	write('|  '),
+	getCharacter(Cabeca,Simbolo),
+	put_char(Simbolo), write('  '),
+	printLineRecursive(Cauda).
 
+% Prints a given line.
+printLineX(Numero,Lista) :-
+	ite( (Numero @< 10), (write(' ')), (write('') )),
+	write(Numero),
+	write(' '),
+	printLineRecursive(Lista).
 
-verifyInput(X,Y) :- ((integer(X), integer(Y), X@>0, X@<10, Y@>0, Y@<10) -> true;write('Insira coordenadas validas!'),fail).
+% Prints the bottom of a whole line.
+printFinalSeparator(0):- write('|'), nl.
+printFinalSeparator(Number):-
+	write('|_____'),
+	Number2 is Number-1,
+	printFinalSeparator(Number2).
 
-test :- repeat, write('Insira as coordenadas(X,Y): '), read(X),write(X), read(Y),write(Y), verifyInput(X,Y).
+% Print a whole line of the board.
+printFullLine(Numero,Lista) :-
+	length(Lista, Length_Lista),
+	write('   '),
+	printTopLine(Length_Lista),
+	printLineX(Numero, Lista),
+	write('   '),
+	printFinalSeparator(Length_Lista).
+
+% Recursive function to print each line given.
+printBoardRecursive([],_).
+printBoardRecursive([Cabeca|Cauda],Numero) :-
+	printFullLine(Numero,Cabeca),
+	X is Numero+1,
+	printBoardRecursive(Cauda,X).
+
+% Print the whole board.
+printBoard(Matrix):-
+	length(Matrix, Length),
+	write('   '),
+	printHeader(0,Length),
+	write('    '),
+	Length_Underscore is ((Length*6)-1),
+	printInitialSeparator(Length_Underscore),
+	printBoardRecursive(Matrix,0).
