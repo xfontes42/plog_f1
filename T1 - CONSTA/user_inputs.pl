@@ -30,18 +30,21 @@ seleciona_tamanho_tab(Tamanho) :-repeat,
 seleciona_jogada(Tipo) :-repeat,
     write('Selecione o tipo de jogada que pretende fazer \'s\' or \'d\' (Single or Double):'),
     once(le_numero(Tipo)),
-    ite((Tipo == 52; Tipo == 67),true,(write('Tipo de jogada invalido!'),nl,fail)).
+    %ite((Tipo == 52; Tipo == 67),true,(write('Tipo de jogada invalido!'),nl,fail)).
+    it((Tipo \== 52, Tipo \== 67),(write('Tipo de jogada invalido!'),nl,fail)).
 
 seleciona_local(X,Y) :-
     repeat,
       write('Selecione uma coordenada X:(_,_)'),
       once(le_numero(Temp_X)),
-      ite((Temp_X @>= 17, Temp_X@=<42 ),true,(write('Coordenada X de Board invalida!'),nl,fail)),
+      %ite((Temp_X @>= 17, Temp_X@=<42 ),true,(write('Coordenada X de Board invalida!'),nl,fail)),
+      it((Temp_X @>= 43; Temp_X@=<16 ),(write('Coordenada X de Board invalida!'),nl,fail)),
       X is Temp_X - 17,
       LetraX is Temp_X+48,
     repeat,
       write('Selecione uma coordenada Y:('),put_code(LetraX),write(',_)'),
       once(le_numero(Y)),
-      ite((Y @>= 0, Y@=<25 ),true,(write('Coordenada Y de Board invalida!'),nl,fail)),
+      %ite((Y @>= 0, Y@=<25 ),true,(write('Coordenada Y de Board invalida!'),nl,fail)),
+      it((Y @>= 26; Y@<0 ),(write('Coordenada Y de Board invalida!'),nl,fail)),
       LetraY is Y,
       write('Coordenadas selecionadas ('),put_code(LetraX),write(', '),write(LetraY),write(').').
