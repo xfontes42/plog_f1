@@ -24,7 +24,8 @@ le_numero(Numero) :-
 seleciona_tamanho_tab(Tamanho) :-repeat,
     write('Selecione um tamanho de board entre 5 e 25.'),
     once(le_numero(Tamanho)),
-    ite((Tamanho @>= 5, Tamanho@=< 25),(true),(write('Tamanho de Board invalido!'),nl,fail)).
+    %ite((Tamanho @>= 5, Tamanho@=< 25),(true),(write('Tamanho de Board invalido!'),nl,fail)).
+    it((Tamanho @>= 26; Tamanho@=< 4),(write('Tamanho de Board invalido!'),nl,fail)).
 
 seleciona_jogada(Tipo) :-repeat,
     write('Selecione o tipo de jogada que pretende fazer \'s\' or \'d\' (Single or Double):'),
