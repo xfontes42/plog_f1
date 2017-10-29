@@ -20,6 +20,17 @@ le_numero(Numero) :-
   Digito is (Char - 48),
   le_todos_numeros(Digito, Numero).
 
+select_game_mode(Option) :-repeat,
+    write('Please select an option from the menu (1-5): '),
+    once(le_numero(Option)),
+    %ite((Tamanho @>= 5, Tamanho@=< 25),(true),(write('Tamanho de Board invalido!'),nl,fail)).
+    it((Option @>5 ; Option@< 1),(write('Invalid option!'),nl,fail)).
+
+select_dificulty(Option) :-repeat,
+    write('Please select a dificulty from 1-5 : '),
+    once(le_numero(Option)),
+    %ite((Tamanho @>= 5, Tamanho@=< 25),(true),(write('Tamanho de Board invalido!'),nl,fail)).
+    it((Option @>5 ; Option@< 1),(write('Invalid option!'),nl,fail)).
 
 seleciona_tamanho_tab(Tamanho) :-repeat,
     write('Selecione um tamanho de board entre 5 e 25.'),
