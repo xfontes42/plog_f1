@@ -17,23 +17,8 @@ menu(Mode) :-
 
 
 start_game(Board) :-
-  seleciona_tamanho_tab(_Tamanho), %DONE
-  create_matrix(_Tamanho,empty,Board). %DONE
-  %printBoard(Board). %DONE
-
-teste :-
   seleciona_tamanho_tab(_Tamanho),
-  create_matrix(_Tamanho,empty,_X),
-  printBoard(_X).
-
-teste2 :-
-  start_game(Board),
-  printBoard(Board).
-
-% teste3 :-
-%   repeat,
-%   (menu(Mode);
-%   write('começou o jogo.'),fail).
+  create_matrix(_Tamanho,empty,Board).
 
 consta_game :-
   repeat,
@@ -41,5 +26,5 @@ consta_game :-
   once(it((Mode \== 4,Mode \== 5),(
     start_game(Board),
     printBoard(Board)))),
-  once(it(Mode == 4, select_dificulty(Dificulty))),
+  once(it(Mode == 4, select_dificulty(_Dificulty))),
   once(ite(Mode == 5, true,fail)).
