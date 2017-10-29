@@ -64,12 +64,69 @@ check_cross_cut_up_left(Matrix, X, Y, New_Element):-
     P_White \== P_Black)).
 
 
+% check_cross_cut_up_right(+Matrix, +X, +Y, +Value)
+check_cross_cut_up_right(Matrix, X, Y, New_Element):-
+  length(Matrix, Size_Matrix),
+  Max_Index is Size_Matrix -1,
+  X_Across is X+1, Y_Across is Y-1,
+  ite(
+  (X == Max_Index ; Y == 0; (
+    get_element_at(Matrix, X_Across, Y_Across, Element_Across),
+    getPerson(Element_Across, Person1),
+    getPerson(New_Element, Person2),
+    Person1 \== Person2)
+  ),
+  (true),
+  ( get_element_at(Matrix, X_Across, Y_Across, Elem1),
+    get_element_at(Matrix, X, Y_Across, Elem2),
+    get_element_at(Matrix, X_Across, Y, Elem3),
+    get_points_from_square(Elem1,Elem2,Elem3, New_Element, P_White, P_Black),
+    P_White \== P_Black)).
+
+% check_cross_cut_down_left(+Matrix, +X, +Y, +Value)
+check_cross_cut_down_left(Matrix, X, Y, New_Element):-
+  X_Across is X-1, Y_Across is Y+1,
+  length(Matrix, Size_Matrix),
+  Max_Index is Size_Matrix-1,
+  ite(
+  (X == 0 ; Y == Max_Index; (
+    get_element_at(Matrix, X_Across, Y_Across, Element_Across),
+    getPerson(Element_Across, Person1),
+    getPerson(New_Element, Person2),
+    Person1 \== Person2)
+  ),
+  (true),
+  ( get_element_at(Matrix, X_Across, Y_Across, Elem1),
+    get_element_at(Matrix, X, Y_Across, Elem2),
+    get_element_at(Matrix, X_Across, Y, Elem3),
+    get_points_from_square(Elem1,Elem2,Elem3, New_Element, P_White, P_Black),
+    P_White \== P_Black)).
+
+% check_cross_cut_down_right(+Matrix, +X, +Y, +Value)
+check_cross_cut_down_right(Matrix, X, Y, New_Element):-
+  length(Matrix, Size_Matrix),
+  Max_Index is Size_Matrix -1,
+  X_Across is X+1, Y_Across is Y+1,
+  ite(
+  (X == Max_Index ; Y == Max_Index; (
+    get_element_at(Matrix, X_Across, Y_Across, Element_Across),
+    getPerson(Element_Across, Person1),
+    getPerson(New_Element, Person2),
+    Person1 \== Person2)
+  ),
+  (true),
+  ( get_element_at(Matrix, X_Across, Y_Across, Elem1),
+    get_element_at(Matrix, X, Y_Across, Elem2),
+    get_element_at(Matrix, X_Across, Y, Elem3),
+    get_points_from_square(Elem1,Elem2,Elem3, New_Element, P_White, P_Black),
+    P_White \== P_Black)).
+
 % check_cross_cut(+Matrix, +X, +Y, +Value)
 check_cross_cut(Matrix, X, Y, New_Element):-
   check_cross_cut_up_left(Matrix, X, Y, New_Element).
-  % check_cross_cut_up_right(Matrix, X, Y, New_Element),
-  % check_cross_cut_down_left(Matrix, X, Y, New_Element),
-  % check_cross_cut_down_right(Matrix, X, Y, New_Element).
+  check_cross_cut_up_right(Matrix, X, Y, New_Element),
+  check_cross_cut_down_left(Matrix, X, Y, New_Element),
+  check_cross_cut_down_right(Matrix, X, Y, New_Element).
 
 % valid_move(+Matrix, +X, +Y, +Value, -New_Element)
 valid_move(Matrix, X, Y, Value, New_Element):-
