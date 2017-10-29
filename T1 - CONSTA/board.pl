@@ -28,25 +28,55 @@ set_element_at(Matrix, X, Y, Value, New_Matrix):-
   append(ColPrefix,[Value|ColSufix],RowNew) ,
   append(RowPrefix,[RowNew|RowSufix],New_Matrix).
 
-% valid_move(+Matrix, +X, +Y, +Value)
-  valid_move(Matrix, X, Y, Value):-
-    get_element_at(Matrix, X, Y, Current_Piece)
-    Current_Piece \== black2, Current_Piece \== white2, % Cannot play on top of a double
-    current_player(X), ((X == Current_Piece, X == Value); Current_Piece == empty). % Cannot play different colors or a double over a single
-    % So falta verificar crosscuts
+
+% sum_pieces(+Current, +Top, -Result)
+sum_pieces(empty, black, black).
+sum_pieces(empty, white, white).
+sum_pieces(empty, black2, black2).
+sum_pieces(empty, white2, white2).
+sum_pieces(black, black, black2).
+sum_pieces(white, white, white2).
 
 
-% replace a single cell in a list-of-lists
-% - the source list-of-lists is L
-% - The cell to be replaced is indicated with a row offset (X)
-%   and a column offset within the row (Y)
-% - The replacement value is Z
-% - the transformed list-of-lists (result) is R
-% replace( L , X , Y , Z , R ) :-
-%   append(RowPfx,[Row|RowSfx],L),     % decompose the list-of-lists into a prefix, a list and a suffix
-%   length(RowPfx,X) ,                 % check the prefix length: do we have the desired list?
-%   append(ColPfx,[_|ColSfx],Row) ,    % decompose that row into a prefix, a column and a suffix
-%   length(ColPfx,Y) ,                 % check the prefix length: do we have the desired column?
-%   append(ColPfx,[Z|ColSfx],RowNew) , % if so, replace the column with its new value
-%   append(RowPfx,[RowNew|RowSfx],R).   % and assemble the transformed list-of-lists
-% at StackOverflow
+% get_points_from_square(+Elem1, +Elem2, +Elem3, +Elem4, -Points_White, -Points_Black)
+get_points_from_square(Elem1, Elem2, Elem3, Elem4, Points_White, Points_Black):-
+  getPoints(Elem1, P1), getPoints(Elem2,P2), getPoints(Elem3,P3), getPoints(Elem4, P4),
+  Sum is (P1 + P2 + P3 + P4),
+  Points_White is mod(Sum,10),
+  Points_Black is div(Sum,10).
+
+
+% check_cross_cut_up_left(+Matrix, +X, +Y, +Value)
+check_cross_cut_up_left(Matrix, X, Y, New_Element):-
+  X_Across is X-1, Y_Across is Y-1,
+  ite(
+  (X == 0 ; Y == 0; (
+    get_element_at(Matrix, X_Across, Y_Across, Element_Across),
+    getPerson(Element_Across, Person1),
+    getPerson(New_Element, Person2),
+    Person1 \== Person2)
+  ),
+  (true),
+  ( get_element_at(Matrix, X_Across, Y_Across, Elem1),
+    get_element_at(Matrix, X, Y_Across, Elem2),
+    get_element_at(Matrix, X_Across, Y, Elem3),
+    get_points_from_square(Elem1,Elem2,Elem3, New_Element, P_White, P_Black),
+    P_White \== P_Black)).
+
+
+% check_cross_cut(+Matrix, +X, +Y, +Value)
+check_cross_cut(Matrix, X, Y, New_Element):-
+  check_cross_cut_up_left(Matrix, X, Y, New_Element).
+  % check_cross_cut_up_right(Matrix, X, Y, New_Element),
+  % check_cross_cut_down_left(Matrix, X, Y, New_Element),
+  % check_cross_cut_down_right(Matrix, X, Y, New_Element).
+
+% valid_move(+Matrix, +X, +Y, +Value, -New_Element)
+valid_move(Matrix, X, Y, Value, New_Element):-
+  get_element_at(Matrix, X, Y, Current_Piece),
+  Current_Piece \== black2, Current_Piece \== white2, % Cannot play on top of a double
+  current_player(Curr_Player), logic_or((Curr_Player == Current_Piece, Curr_Player == Value),(Current_Piece == empty)), % Cannot play different colors or a double over a single
+  sum_pieces(Current_Piece, Value, New_Element),
+  check_cross_cut(Matrix, X, Y, New_Element).
+
+% valid_move([[black, empty, white],[black2,empty,white2],[empty,empty,empty]], 0,0,black).
