@@ -1,12 +1,5 @@
 :-include('utilities.pl').
 
-% Dictionary to associate matrix values.
-getCharacter(black, 'b').
-getCharacter(black2, 'B').
-getCharacter(white, 'w').
-getCharacter(white2, 'W').
-getCharacter(empty, ' ').
-
 % Print header.
 printHeader(_,0):- write(' '), nl.
 printHeader(Current,Missing):-

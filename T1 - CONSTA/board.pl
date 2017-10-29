@@ -1,4 +1,5 @@
 :-include('utilities.pl').
+:-include('dynamic_globals.pl').
 :-use_module(library(lists)).
 
 % create_list(+Size, +Value, -List).
@@ -26,6 +27,14 @@ set_element_at(Matrix, X, Y, Value, New_Matrix):-
   length(ColPrefix,Y) ,
   append(ColPrefix,[Value|ColSufix],RowNew) ,
   append(RowPrefix,[RowNew|RowSufix],New_Matrix).
+
+% valid_move(+Matrix, +X, +Y, +Value)
+  valid_move(Matrix, X, Y, Value):-
+    get_element_at(Matrix, X, Y, Current_Piece)
+    Current_Piece \== black2, Current_Piece \== white2, % Cannot play on top of a double
+    current_player(X), ((X == Current_Piece, X == Value); Current_Piece == empty). % Cannot play different colors or a double over a single
+    % So falta verificar crosscuts
+
 
 % replace a single cell in a list-of-lists
 % - the source list-of-lists is L
