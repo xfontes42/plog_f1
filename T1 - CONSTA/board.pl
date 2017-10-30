@@ -60,9 +60,8 @@ check_cross_cut_up_left(Matrix, X, Y, New_Element):-
   ( get_element_at(Matrix, X_Across, Y_Across, Elem1),
     get_element_at(Matrix, X, Y_Across, Elem2),
     get_element_at(Matrix, X_Across, Y, Elem3),
-    get_points_from_square(Elem1,Elem2,Elem3, New_Element, P_White, P_Black),
+    get_points_from_square(Elem1,Elem2,Elem3, New_Element, P_White, P_Black),!,
     P_White \== P_Black)).
-
 
 % check_cross_cut_up_right(+Matrix, +X, +Y, +Value)
 check_cross_cut_up_right(Matrix, X, Y, New_Element):-
@@ -123,9 +122,9 @@ check_cross_cut_down_right(Matrix, X, Y, New_Element):-
 
 % check_cross_cut(+Matrix, +X, +Y, +Value)
 check_cross_cut(Matrix, X, Y, New_Element):-
-  check_cross_cut_up_left(Matrix, X, Y, New_Element).
-  check_cross_cut_up_right(Matrix, X, Y, New_Element),
-  check_cross_cut_down_left(Matrix, X, Y, New_Element),
+  check_cross_cut_up_left(Matrix, X, Y, New_Element),!,
+  check_cross_cut_up_right(Matrix, X, Y, New_Element),!,
+  check_cross_cut_down_left(Matrix, X, Y, New_Element),!,
   check_cross_cut_down_right(Matrix, X, Y, New_Element).
 
 % valid_move(+Matrix, +X, +Y, +Value, -New_Element)

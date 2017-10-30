@@ -22,7 +22,7 @@ consta_game :-
   once(menu(Mode)),
   once(it((Mode \== 4,Mode \== 5),(
     start_game(Board),
-    ciclo_jogo,
+    game_cycle(Board),
     end_game,
     credits))),
   once(it(Mode == 4, select_dificulty(Dificulty))),
@@ -34,11 +34,29 @@ menu(Mode) :-
   once(select_game_mode(Mode)),
   it(Mode \== 5,fail).
 
-
 start_game(Board) :-
-  seleciona_tamanho_tab(_Tamanho), %DONE
-  create_matrix(_Tamanho,empty,Board), %DONE
-  printBoard(Board). %DONE
+  seleciona_tamanho_tab(_Tamanho),
+  create_matrix(_Tamanho,empty,Board),
+  printBoard(Board).
+
+game_cycle(Board) :-
+  repeat,
+  play(Board,NewBoard),
+  printBoard(NewBoard).
+
+play(Board,NewBoard) :-
+  repeat,
+  once(current_player(Player)),
+  write('Playing '),write(Player),write(' pieces.'),nl,
+  seleciona_jogada(Type),
+  seleciona_local(X,Y),
+  getPlay(Type,Player,Value),
+  !,
+  ite(valid_move(Board,X,Y,Value,NewElement),
+  (set_element_at(Board, Y, X, NewElement, NewBoard),switch_player,printBoard(NewBoard)),
+  ( get_element_at(Board,X,Y,NewElement),
+    set_element_at(Board, Y, X, NewElement, NewBoard),
+    write('Jogada inválida.'),nl)).
 
 ciclo_jogo :- jogar_inicio,
               repeat,
@@ -56,9 +74,3 @@ jogar :- repeat,
 verifica_jogada :- verifica_limites,
                    verifica_tabuleiro,
                    verifica_crosscuts
-
-verifica_crosscuts(Matrix,X,Y) :-
-  Matrix[X,Y+1]+Matrix[X-1,Y] == Matrix[X,Y]+Matrix[X-1,Y-1]
-  Matrix[X,Y-1]+Matrix[X-1,Y] == Matrix[X,Y]+Matrix[X+1,Y-1]
-  Matrix[X,Y+1]+Matrix[X+1,Y] == Matrix[X,Y]+Matrix[X-1,Y+1]
-  Matrix[X,Y-1]+Matrix[X+1,Y] == Matrix[X,Y]+Matrix[X+1,Y+1]

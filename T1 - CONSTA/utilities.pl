@@ -29,3 +29,10 @@ getPerson(black2, black).
 getPerson(white, white).
 getPerson(white2, white).
 getPerson(empty,empty).
+
+% Dictionary to associate current player and play type to the board identifier
+%(67+48 = 's'; 52+48 = 'd')
+getPlay(52, black, black2).
+getPlay(67, black, black).
+getPlay(52, white, white2).
+getPlay(67, white, white).
