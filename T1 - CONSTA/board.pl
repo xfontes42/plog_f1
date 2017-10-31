@@ -131,7 +131,8 @@ check_cross_cut(Matrix, X, Y, New_Element):-
 valid_move(Matrix, X, Y, Value, New_Element):-
   get_element_at(Matrix, X, Y, Current_Piece),
   Current_Piece \== black2, Current_Piece \== white2, % Cannot play on top of a double
-  current_player(Curr_Player), logic_or((Curr_Player == Current_Piece, Curr_Player == Value),(Current_Piece == empty)), % Cannot play different colors or a double over a single
+  current_player(Curr_Player),
+  once(logic_or((Curr_Player == Current_Piece, Curr_Player == Value),(Current_Piece == empty))), % Cannot play different colors or a double over a single
   sum_pieces(Current_Piece, Value, New_Element),
   check_cross_cut(Matrix, X, Y, New_Element).
 
