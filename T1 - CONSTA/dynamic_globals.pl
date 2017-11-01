@@ -1,13 +1,14 @@
-% :-dynamic game_mode/1.
+:-dynamic game_mode/1.
 :-dynamic game_difficulty/1.
 :-dynamic board_size/1.
 :-dynamic current_player/1.
+:-dynamic user_play_as/1.
 
 game_mode(1).
 game_difficulty(1).
 board_size(9).
 current_player(black).
-
+user_play_as(black).
 
 set_game_difficulty(Difficulty) :-
   nonvar(Difficulty),

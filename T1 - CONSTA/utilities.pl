@@ -52,3 +52,7 @@ getPlay(52, black, black2).
 getPlay(67, black, black).
 getPlay(52, white, white2).
 getPlay(67, white, white).
+% Dictionary to associate game Mode
+getMode(1, human_human).
+getMode(2, human_computer).
+getMode(3, computer_computer).

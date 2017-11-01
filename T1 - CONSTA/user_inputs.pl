@@ -1,5 +1,3 @@
-:-include('utilities.pl').
-
 % le_todos_chars(+Char, -Numero)
 le_todos_chars(10,0).
 le_todos_chars(13,0).

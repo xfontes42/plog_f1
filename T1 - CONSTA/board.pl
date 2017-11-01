@@ -1,4 +1,3 @@
-:-include('utilities.pl').
 :-include('dynamic_globals.pl').
 :-use_module(library(lists)).
 
@@ -160,7 +159,7 @@ search_black(Matrix, [Current_Line|Rest], X, Y):-
   get_element_at(Matrix, X, Y, Elem3),
   get_element_at(Matrix, X, Y2, Elem4),
   get_points_from_square(Elem1, Elem2, Elem3, Elem4, Points_White, Points_Black),
-  Points_White @< Points_Black,
+  Points_White @=< Points_Black,
   search_black(Matrix, Rest, X2, Y2).
 
 % check_win_black(+Matrix)
@@ -168,3 +167,25 @@ check_win_black([First_Row|Rest]):-
   logic_or(nth0(X,First_Row,black), nth0(X,First_Row,black2)),
   Y is 0,
   search_black([First_Row|Rest],Rest, X, Y).
+
+% search_white(+Matrix, +Matrix_Changing, +X, +Y)
+search_white(_,[],_,_).
+search_white(Matrix, [_Current_Line|Rest] , X, Y):-
+  X2 is X+1,
+  logic_or(get_element_at(Matrix, X2, Y2, white), get_element_at(Matrix, X2, Y2, white2)),
+  Y_Diagonal_Up is Y-1,
+  Y_Diagonal_Down is Y+1,
+  ((Y2 == Y_Diagonal_Up);(Y2 == Y_Diagonal_Down);(Y2 == Y)),
+  get_element_at(Matrix, X2, Y, Elem1),
+  get_element_at(Matrix, X2, Y2, Elem2),
+  get_element_at(Matrix, X, Y, Elem3),
+  get_element_at(Matrix, X, Y2, Elem4),
+  get_points_from_square(Elem1, Elem2, Elem3, Elem4, Points_White, Points_Black),
+  Points_Black @=< Points_White,
+  search_white(Matrix, Rest , X2, Y2).
+
+% check_win_white(+Matrix)
+check_win_white([First_Row|Rest]):-
+  X is 0,
+  logic_or(get_element_at([First_Row|Rest], X, Y, white), get_element_at([First_Row|Rest], X, Y, white2)),
+  search_white([First_Row|Rest], Rest, X, Y).

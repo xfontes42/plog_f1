@@ -1,5 +1,3 @@
-:-include('utilities.pl').
-
 % Print header.
 % printHeader(+Current,+Missing)
 printHeader(_,0):- write(' '), nl.

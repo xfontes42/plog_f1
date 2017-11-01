@@ -1,5 +1,5 @@
-:-include('menus.pl').
 :-include('utilities.pl').
+:-include('menus.pl').
 :-include('draw_board.pl').
 :-include('user_inputs.pl').
 :-include('board.pl').
@@ -39,13 +39,24 @@ play_round(Board_In, Board_Out, _Mode):-
      valid_move(Board_Temp, _, _, Piece_To_Play, _N3), !,
       play_piece(Board_Temp, Board_Out, Piece_To_Play))).
 
+
+check_win(Matrix):-
+  current_player(Player),
+  ite(
+  (Player == black),
+  (check_win_white(Matrix), write("Winner is WHITE!"), nl),
+  (check_win_black(Matrix), write("Winner is BLACK!"), nl)).
+
 % game_cycle(+Board, +Mode)
 game_cycle(Board, Mode):-
   play_round(Board, New_Board, Mode),
   printBoard(New_Board),
-  % verificação se ganhou/perdeu
-  switch_player,
-  game_cycle(New_Board, Mode).
+  ite(
+  (check_win(New_Board)),
+  (true),
+  (switch_player,
+   game_cycle(New_Board, Mode)
+  )).
 
 % consta_game
 consta_game :-
