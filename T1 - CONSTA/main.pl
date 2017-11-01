@@ -24,11 +24,20 @@ play_piece(Board_In, Board_Out, Piece_To_Play):-
         (once(set_element_at(Board_In, X, Y, NewElement, Board_Out))),
         (write('Jogada inválida.'),nl, fail)).
 
+% play_computer(+Board_In, -Board_Out, +Player)
+play_computer(Board_In, Board_Out,Player):-
+  duplicate(Board_In, Board_Out).
+
 % play_round(+Board_In, -Board_Out, +_Mode)
-play_round(Board_In, Board_Out, _Mode):-
+play_round(Board_In, Board_Out, Mode):-
     once(current_player(Player)),
     write('Playing '),write(Player),write(' pieces.'),nl,
-    seleciona_jogada(Type),
+    once(user_play_as(User_Player)),
+
+    ite(
+    ((Mode == 3, Player \== User_Player);(Mode==2)),
+    (play_computer(Board_In, Board_Out,Player)),
+    (seleciona_jogada(Type),
     getPlay(Type, Player, Piece_To_Play),
     ite((Type == 52), % d = 52, s = 67
     (valid_move(Board_In, _, _, Piece_To_Play, _N1), !,
@@ -37,15 +46,16 @@ play_round(Board_In, Board_Out, _Mode):-
     (valid_move(Board_In, _, _, Piece_To_Play, _N2), !,
       play_piece(Board_In, Board_Temp, Piece_To_Play),
      valid_move(Board_Temp, _, _, Piece_To_Play, _N3), !,
-      play_piece(Board_Temp, Board_Out, Piece_To_Play))).
+      play_piece(Board_Temp, Board_Out, Piece_To_Play)))
+      )).
 
-
-check_win(Matrix):-
+% check_win(+Board)
+check_win(Board):-
   current_player(Player),
   ite(
   (Player == black),
-  (check_win_white(Matrix), write("Winner is WHITE!"), nl),
-  (check_win_black(Matrix), write("Winner is BLACK!"), nl)).
+  (check_win_white(Board), write("Winner is WHITE!"), nl),
+  (check_win_black(Board), write("Winner is BLACK!"), nl)).
 
 % game_cycle(+Board, +Mode)
 game_cycle(Board, Mode):-

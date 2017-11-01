@@ -13,6 +13,10 @@ logic_or(_X, _Y):- _Y.
 % copy(+Old, -New)
 copy(Old, New):- functor(Old, F, N), functor(New, F, N).
 
+% duplicate(+Old, -New)
+duplicate(_Old, _New):- fail.
+duplicate(_Old, _Old).
+
 % limit(+Value_In, +Bottom_Limit, +Top_Limit, -Value_Out)
 limit(Value_In, Bottom_Limit, Top_Limit, Value_Out):-
   Value_In @>= Bottom_Limit,
@@ -52,7 +56,3 @@ getPlay(52, black, black2).
 getPlay(67, black, black).
 getPlay(52, white, white2).
 getPlay(67, white, white).
-% Dictionary to associate game Mode
-getMode(1, human_human).
-getMode(2, human_computer).
-getMode(3, computer_computer).
