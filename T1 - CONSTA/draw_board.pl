@@ -1,6 +1,7 @@
 :-include('utilities.pl').
 
 % Print header.
+% printHeader(+Current,+Missing)
 printHeader(_,0):- write(' '), nl.
 printHeader(Current,Missing):-
 	write('   '),
@@ -12,6 +13,7 @@ printHeader(Current,Missing):-
 	printHeader(Current2,Missing2).
 
 % Prints the initial separator of the board.
+% printInitialSeparator(+Number)
 printInitialSeparator(0):- write(' '), nl.
 printInitialSeparator(Number):-
 	write('_'),
@@ -19,6 +21,7 @@ printInitialSeparator(Number):-
 	printInitialSeparator(Number2).
 
 % Prints the top of a whole line.
+% printTopLine(+Number)
 printTopLine(0):- write('|'), nl.
 printTopLine(Number):-
 	write('|     '),
@@ -26,6 +29,7 @@ printTopLine(Number):-
 	printTopLine(Number2).
 
 % Prints the line given recursively.
+% printLineRecursive(+Lista)
 printLineRecursive([]) :- write('|'),nl.
 printLineRecursive([Cabeca|Cauda]) :-
 	write('|  '),
@@ -34,6 +38,7 @@ printLineRecursive([Cabeca|Cauda]) :-
 	printLineRecursive(Cauda).
 
 % Prints a given line.
+% printLineX(+Numero,+Lista)
 printLineX(Numero,Lista) :-
 	ite( (Numero @< 10), (write(' ')), (write('') )),
 	write(Numero),
@@ -41,6 +46,7 @@ printLineX(Numero,Lista) :-
 	printLineRecursive(Lista).
 
 % Prints the bottom of a whole line.
+% printFinalSeparator(+Number)
 printFinalSeparator(0):- write('|'), nl.
 printFinalSeparator(Number):-
 	write('|_____'),
@@ -48,6 +54,7 @@ printFinalSeparator(Number):-
 	printFinalSeparator(Number2).
 
 % Print a whole line of the board.
+% printFullLine(+Numero,+Lista)
 printFullLine(Numero,Lista) :-
 	length(Lista, Length_Lista),
 	write('   '),
@@ -57,6 +64,7 @@ printFullLine(Numero,Lista) :-
 	printFinalSeparator(Length_Lista).
 
 % Recursive function to print each line given.
+% printBoardRecursive(+Lista,+Numero)
 printBoardRecursive([],_).
 printBoardRecursive([Cabeca|Cauda],Numero) :-
 	printFullLine(Numero,Cabeca),
@@ -64,6 +72,7 @@ printBoardRecursive([Cabeca|Cauda],Numero) :-
 	printBoardRecursive(Cauda,X).
 
 % Print the whole board.
+% printBoard(+Matrix)
 printBoard(Matrix):-
 	length(Matrix, Length),
 	write('   '),

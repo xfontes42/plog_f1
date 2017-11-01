@@ -1,10 +1,33 @@
+% ite(+If, +Then, +_Else)
 ite(If, Then, _Else) :- If, !, Then.
 ite(_If, _Then, Else) :- Else.
+
+% it(+If, +Then)
 it(If, Then):- If, !, Then.
 it(_,_).
+
+% logic_or(+_X, +_Y)
 logic_or(_X, _Y):- _X.
 logic_or(_X, _Y):- _Y.
+
+% copy(+Old, -New)
 copy(Old, New):- functor(Old, F, N), functor(New, F, N).
+
+% limit(+Value_In, +Bottom_Limit, +Top_Limit, -Value_Out)
+limit(Value_In, Bottom_Limit, Top_Limit, Value_Out):-
+  Value_In @>= Bottom_Limit,
+  Value_In @=< Top_Limit,
+  Value_Out is Value_In.
+limit(Value_In, Bottom_Limit, Top_Limit, Value_Out):-
+  it(
+  (Value_In @< Bottom_Limit),
+  (Value_Out is Bottom_Limit)
+  ),
+  it(
+  (Value_In @> Top_Limit),
+  (Value_Out is Top_Limit)
+  ).
+
 % Dictionary to associate matrix values.
 getCharacter(black, 'b').
 getCharacter(black2, 'B').
