@@ -1,3 +1,5 @@
+:-use_module(library(random)).
+
 % ite(+If, +Then, +_Else)
 ite(If, Then, _Else) :- If, !, Then.
 ite(_If, _Then, Else) :- Else.
@@ -31,6 +33,15 @@ limit(Value_In, Bottom_Limit, Top_Limit, Value_Out):-
   (Value_In @> Top_Limit),
   (Value_Out is Top_Limit)
   ).
+
+
+generate_random(Limit_Down_Closed, Limit_Up_Open, Number1, Number2):-
+  repeat,
+    random(Limit_Down_Closed, Limit_Up_Open, X),
+    random(Limit_Down_Closed, Limit_Up_Open, Y),
+    X \== Y,
+    Number1 is X,
+    Number2 is Y.
 
 % Dictionary to associate matrix values.
 getCharacter(black, 'b').

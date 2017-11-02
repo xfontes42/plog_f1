@@ -1,4 +1,3 @@
-:-use_module(library(random)).
 :-use_module(library(system)).
 :-include('utilities.pl').
 :-include('menus.pl').
@@ -32,24 +31,22 @@ play_computer_piece(Board_In, Board_Out, Piece_S, Piece_D, _Difficulty):-
   setof(X_D-Y_D-New_Element_D, valid_move(Board_In, X_D, Y_D, Piece_D, New_Element_D), List_Doubles),
   length(List_Singles, Size_Singles),
   length(List_Doubles, Size_Doubles),
-  random(0,Size_Singles,Index_Singles),
-  random(0,Size_Singles,Index_Singles_2),
-  Index_Singles \== Index_Singles_2,
-  random(0,Size_Doubles,Index_Doubles),
+  random(0,Size_Doubles,Index_Doubles), !,
   ite(
-  (Size_Singles < 2),
+  (Size_Singles @< 2),
   (nth0(Index_Doubles, List_Doubles, X_Play-Y_Play-New_Element_Play),
     set_element_at(Board_In, X_Play, Y_Play, New_Element_Play, Board_Out)),
   (random(0,2,Choose_One),
     ite((Choose_One == 0),
-        ((nth0(Index_Singles, List_Singles, X_Play-Y_Play-New_Element_Play),
+        ((generate_random(0,Size_Singles,Index_Singles,Index_Singles_2),
+          nth0(Index_Singles, List_Singles, X_Play-Y_Play-New_Element_Play),
           set_element_at(Board_In, X_Play, Y_Play, New_Element_Play, Board_Temp),
           nth0(Index_Singles_2, List_Singles, X_Play_2-Y_Play_2-New_Element_Play_2),
           set_element_at(Board_Temp,X_Play_2, Y_Play_2, New_Element_Play_2, Board_Out))),
         (nth0(Index_Doubles, List_Doubles, X_Play-Y_Play-New_Element_Play),
           set_element_at(Board_In, X_Play, Y_Play, New_Element_Play, Board_Out))))
-  ),
-  sleep(0.2).
+  ).
+  %sleep(0.2).
   % get_code(_).
   % duplicate(Board_In, Board_Out).
 
@@ -66,21 +63,20 @@ play_round(Board_In, Board_Out, Mode):-
     once(current_player(Player)),
     write('Playing '),write(Player),write(' pieces.'),nl,
     once(user_play_as(User_Player)),
-
     ite(
-    ((Mode == 3, Player \== User_Player);(Mode==2)),
+    ((write('here mode'),(Mode == 3, Player \== User_Player);(Mode==2))),
     (play_computer(Board_In, Board_Out,Player)),
     (seleciona_jogada(Type),
-    getPlay(Type, Player, Piece_To_Play),
-    ite((Type == 52), % d = 52, s = 67
-    (valid_move(Board_In, _, _, Piece_To_Play, _N1), !,
-      play_human_piece(Board_In, Board_Out, Piece_To_Play)),
+      getPlay(Type, Player, Piece_To_Play),
+      ite((Type == 52), % d = 52, s = 67
+        (valid_move(Board_In, _, _, Piece_To_Play, _N1), !,
+          play_human_piece(Board_In, Board_Out, Piece_To_Play)),
 
-    (valid_move(Board_In, _, _, Piece_To_Play, _N2), !,
-      play_human_piece(Board_In, Board_Temp, Piece_To_Play),
-     valid_move(Board_Temp, _, _, Piece_To_Play, _N3), !,
-      play_human_piece(Board_Temp, Board_Out, Piece_To_Play)))
-      )).
+        (valid_move(Board_In, _, _, Piece_To_Play, _N2), !,
+          play_human_piece(Board_In, Board_Temp, Piece_To_Play),
+          valid_move(Board_Temp, _, _, Piece_To_Play, _N3), !,
+          play_human_piece(Board_Temp, Board_Out, Piece_To_Play)))
+    )).
 
 % check_win(+Board)
 check_win(Board):-
