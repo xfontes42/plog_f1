@@ -64,7 +64,7 @@ play_round(Board_In, Board_Out, Mode):-
     write('Playing '),write(Player),write(' pieces.'),nl,
     once(user_play_as(User_Player)),
     ite(
-    ((write('here mode'),(Mode == 3, Player \== User_Player);(Mode==2))),
+    ((Mode == 3, Player \== User_Player);(Mode==2)),
     (play_computer(Board_In, Board_Out,Player)),
     (seleciona_jogada(Type),
       getPlay(Type, Player, Piece_To_Play),
