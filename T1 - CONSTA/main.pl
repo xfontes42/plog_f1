@@ -1,4 +1,5 @@
 :-use_module(library(random)).
+:-use_module(library(system)).
 :-include('utilities.pl').
 :-include('menus.pl').
 :-include('draw_board.pl').
@@ -47,7 +48,8 @@ play_computer_piece(Board_In, Board_Out, Piece_S, Piece_D, _Difficulty):-
           set_element_at(Board_Temp,X_Play_2, Y_Play_2, New_Element_Play_2, Board_Out))),
         (nth0(Index_Doubles, List_Doubles, X_Play-Y_Play-New_Element_Play),
           set_element_at(Board_In, X_Play, Y_Play, New_Element_Play, Board_Out))))
-  ).
+  ),
+  sleep(0.2).
   % get_code(_).
   % duplicate(Board_In, Board_Out).
 
