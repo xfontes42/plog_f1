@@ -15,6 +15,7 @@ start_game(Board) :-
   seleciona_tamanho_tab(_Tamanho),
   set_board_size(_Tamanho),
   create_matrix(_Tamanho,empty,Board),
+  reset_first_player,
   printBoard(Board).
 
 % play_human_piece(+Board_In, -Board_Out, +Piece_To_Play)
@@ -57,6 +58,26 @@ play_computer(Board_In, Board_Out,Player):-
   (Player == black),
   (play_computer_piece(Board_In, Board_Out, black, black2, Difficulty)),
   (play_computer_piece(Board_In, Board_Out, white, white2, Difficulty))).
+
+% play_first_round_computer(+Board_In, -Board_Out, +Piece)
+play_first_round_computer(Board_In, Board_Out):-
+  setof(X_S-Y_S-Element_S, valid_move(Board_In, X_S, Y_S, black, Element_S), List_Singles),
+  length(List_Singles, Size_Singles),
+  random(0,Size_Singles,Index_Singles),
+  nth0(Index_Singles, List_Singles, X_Play-Y_Play-New_Element_Play),
+  set_element_at(Board_In, X_Play, Y_Play, New_Element_Play, Board_Out).
+
+% play_first_round(+Board_In, -Board_Out)
+play_first_round(Board_In, Board_Out, Mode):-
+  once(current_player(Player)),
+  write('Playing '),write(Player),write(' pieces.'),nl,
+  once(user_play_as(User_Player)),
+  ite(
+    ((Mode == 3, Player \== User_Player);(Mode==2)),
+    (play_first_round_computer(Board_In, Board_Out)),
+    (play_human_piece(Board_In, Board_Out, black))),
+  printBoard(Board_Out),
+  switch_player.
 
 % play_round(+Board_In, -Board_Out, +_Mode)
 play_round(Board_In, Board_Out, Mode):-
@@ -103,6 +124,7 @@ consta_game :-
   once(menu(Mode)),
   once(it((Mode \== 4,Mode \== 5),(
     start_game(Board),
-    game_cycle(Board, Mode)))),
+    play_first_round(Board, Board_Out, Mode),
+    game_cycle(Board_Out, Mode)))),
   once(it(Mode == 4, select_dificulty(_Dificulty))),
   once(ite(Mode == 5, true,fail)).

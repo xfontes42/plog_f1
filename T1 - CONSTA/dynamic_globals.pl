@@ -32,3 +32,7 @@ switch_player:-
   ite((current_player(black)),
       (retract(current_player(_)), assert(current_player(white))),
       (retract(current_player(_)), assert(current_player(black)))).
+
+reset_first_player:-
+  retract(current_player(_)),
+  assert(current_player(black)).
