@@ -131,17 +131,118 @@ valid_move(Matrix, X, Y, Value, New_Element):-
   once(logic_or((Curr_Player == Current_Piece, Curr_Player == Value),(Current_Piece == empty))), % Cannot play different colors or a double over a single
   sum_pieces(Current_Piece, Value, New_Element),
   check_cross_cut(Matrix, X, Y, New_Element).
-% exemplo -> valid_move([[black, empty, white],[black2,empty,white2],[empty,empty,empty]], 0,0,black).
+
+
+
+
+
+
+% % search_black(+Matrix, +Matrix_Changing, +X, +Y)
+% search_black(_,[],_,_).
+% search_black(Matrix, [Current_Line|Rest], X, Y):-
+%   Y2 is Y+1,
+%
+%   ((X2 == X_Diagonal_Left);(X2 == X_Diagona_Right);(X2 == X)),
+%   get_element_at(Matrix, X2, Y, Elem1),
+%   get_element_at(Matrix, X2, Y2, Elem2),
+%   get_element_at(Matrix, X, Y, Elem3),
+%   get_element_at(Matrix, X, Y2, Elem4),
+%   get_points_from_square(Elem1, Elem2, Elem3, Elem4, Points_White, Points_Black),
+%   Points_White @=< Points_Black,
+%   search_black(Matrix, Rest, X2, Y2).
+%
+% % check_win_black(+Matrix)
+% check_win_black([First_Row|Rest]):-
+%   logic_or(nth0(X,First_Row,black), nth0(X,First_Row,black2)),
+%   Y is 0,
+%   search_black([First_Row|Rest],Rest, X, Y).
+
+
+% get_points_black(+Matrix)
+get_points_black(_, [], Current_Number, _, _):-
+  update_max_points(Current_Number).
+
+get_points_black(Matrix, [First_Row|Rest], Current_Number, X, Y):-
+  Y2 is Y + 1,
+  ite((Current_Number == 0),
+  ( % THEN EXTERIOR
+  ite((logic_or(nth0(X,First_Row,black), nth0(X,First_Row,black2))),
+  ( % THEN INTERIOR
+    New_Current_Number is Current_Number + 1,
+    get_points_black(Matrix, Rest, New_Current_Number, X, Y)
+  ), % END_THEN INTERIOR
+  (
+  update_max_points(Current_Number),
+  get_points_black(Matrix,Rest,0,0,Y2)) % ELSE INTERIOR
+  )
+  ), % END_THEN EXTERIOR
+  ( % ELSE EXTERIOR
+
+  ite(
+    % IF
+    (logic_or(nth0(X2, First_Row, black), nth0(X2, First_Row, black2))),
+    % THEN
+    (
+        X_Diagonal_Left is X-1,
+        X_Diagona_Right is X+1,
+
+        ite(
+          % IF
+          ((X2 == X_Diagonal_Left);(X2 == X_Diagona_Right);(X2 == X)),
+          % THEN
+          (
+              get_element_at(Matrix, X2, Y, Elem1),
+              get_element_at(Matrix, X2, Y2, Elem2),
+              get_element_at(Matrix, X, Y, Elem3),
+              get_element_at(Matrix, X, Y2, Elem4),
+              get_points_from_square(Elem1, Elem2, Elem3, Elem4, Points_White, Points_Black),
+              ite(
+                % IF
+                (Points_White @=< Points_Black),
+                % THEN
+                (
+                  New_Current_Number is Current_Number + 1,
+                  get_points_black(Matrix, Rest, New_Current_Number, X2, Y2)
+                ),
+                % ELSE
+                (
+                  update_max_points(Current_Number),
+                  get_points_black(Matrix,Rest,0,0,Y2)
+                )
+              )
+          ),
+          % ELSE
+          (
+              update_max_points(Current_Number),
+              get_points_black(Matrix,Rest,0,0,Y2)
+          )
+         )
+
+      ),
+      % ELSE
+      (
+        update_max_points(Current_Number),
+        get_points_black(Matrix,Rest,0,0,Y2)) % ELSE INTERIOR
+      )
+  )).  % END_ELSE EXTERIOR
+
+
 
 % eval_board_black(+Matrix, -Number_Black)
-eval_board_black(_Matrix, _Number_Black).
+eval_board_black(Matrix, Number_Black):-
+  get_points_black(Matrix, Matrix, 0, 0, 0),
+  max_points(Number_Black).
 
 % eval_board_white(+Matrix, -Number_White)
-eval_board_white(_Matrix, _Number_White).
+eval_board_white(_Matrix, Number_White):-
+
+  max_points(Number_White).
 
 % eval_board(+Matrix, -Number_Black, -Number_White)
 eval_board(Matrix, Number_Black, Number_White):-
+  set_max_points(0),
   eval_board_black(Matrix, Number_Black),
+  set_max_points(0),
   eval_board_white(Matrix, Number_White).
   % limit(Number_Black_2, 0, 1000, Number_Black),
   % limit(Number_White_2, 0, 1000, Number_White),

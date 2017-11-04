@@ -27,7 +27,7 @@ play_human_piece(Board_In, Board_Out, Piece_To_Play):-
         (write('Jogada inválida.'),nl, fail)).
 
 % play_computer_piece(+Board_In, -Board_Out, +Piece_S, +Piece_D, +Difficulty)
-play_computer_piece(Board_In, Board_Out, Piece_S, Piece_D, _Difficulty):-
+play_computer_piece(Board_In, Board_Out, Piece_S, Piece_D, Difficulty):-
   setof(X_S-Y_S-Element_S, valid_move(Board_In, X_S, Y_S, Piece_S, Element_S), List_Singles),
   setof(X_D-Y_D-New_Element_D, valid_move(Board_In, X_D, Y_D, Piece_D, New_Element_D), List_Doubles),
   length(List_Singles, Size_Singles),

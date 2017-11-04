@@ -9,6 +9,20 @@ game_difficulty(1).
 board_size(9).
 current_player(black).
 user_play_as(black).
+max_points(0).
+
+set_max_points(New_Max):-
+  nonvar(New_Max),
+  integer(New_Max),
+  retract(max_points(_)),
+  asseta(max_points(New_Max)).
+
+update_max_points(Current_Number):-
+  max_points(Current_Max_Points),
+  it(
+  (Current_Max_Points @< Current_Number),
+  (set_max_points(Current_Number))
+  ).
 
 set_game_difficulty(Difficulty) :-
   nonvar(Difficulty),
