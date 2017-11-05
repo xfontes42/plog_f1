@@ -159,25 +159,29 @@ valid_move(Matrix, X, Y, Value, New_Element):-
 
 
 % get_points_black(+Matrix)
-get_points_black(_, [], Current_Number, _, _):-
-  update_max_points(Current_Number).
+get_points_black(_, [], _, _, _):-
+  max_points(X),
+  Y is X-1,
+  set_max_points(Y).
 
 get_points_black(Matrix, [First_Row|Rest], Current_Number, X, Y):-
   Y2 is Y + 1,
   ite((Current_Number == 0),
   ( % THEN EXTERIOR
-  ite((logic_or(nth0(X,First_Row,black), nth0(X,First_Row,black2))),
-  ( % THEN INTERIOR
-    New_Current_Number is Current_Number + 1,
-    get_points_black(Matrix, Rest, New_Current_Number, X, Y)
-  ), % END_THEN INTERIOR
-  (
-  update_max_points(Current_Number),
-  get_points_black(Matrix,Rest,0,0,Y2)) % ELSE INTERIOR
-  )
+    ite(
+      (logic_or(nth0(X3,First_Row,black), nth0(X3,First_Row,black2))),
+      ( % THEN INTERIOR
+        New_Current_Number is Current_Number + 1,
+        update_max_points(New_Current_Number),
+        get_points_black(Matrix, [First_Row|Rest], New_Current_Number, X3, Y)
+      ), % END_THEN INTERIOR
+      (
+      update_max_points(Current_Number),
+      get_points_black(Matrix,Rest,0,0,Y2)
+      ) % ELSE INTERIOR
+    )
   ), % END_THEN EXTERIOR
   ( % ELSE EXTERIOR
-
   ite(
     % IF
     (logic_or(nth0(X2, First_Row, black), nth0(X2, First_Row, black2))),
@@ -202,6 +206,7 @@ get_points_black(Matrix, [First_Row|Rest], Current_Number, X, Y):-
                 % THEN
                 (
                   New_Current_Number is Current_Number + 1,
+                  update_max_points(New_Current_Number),
                   get_points_black(Matrix, Rest, New_Current_Number, X2, Y2)
                 ),
                 % ELSE
@@ -221,11 +226,9 @@ get_points_black(Matrix, [First_Row|Rest], Current_Number, X, Y):-
       ),
       % ELSE
       (
-        update_max_points(Current_Number),
         get_points_black(Matrix,Rest,0,0,Y2)) % ELSE INTERIOR
       )
   )).  % END_ELSE EXTERIOR
-
 
 
 % eval_board_black(+Matrix, -Number_Black)

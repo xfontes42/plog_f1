@@ -3,6 +3,7 @@
 :-dynamic board_size/1.
 :-dynamic current_player/1.
 :-dynamic user_play_as/1.
+:-dynamic max_points/1.
 
 game_mode(1).
 game_difficulty(1).
@@ -15,7 +16,7 @@ set_max_points(New_Max):-
   nonvar(New_Max),
   integer(New_Max),
   retract(max_points(_)),
-  asseta(max_points(New_Max)).
+  asserta(max_points(New_Max)).
 
 update_max_points(Current_Number):-
   max_points(Current_Max_Points),
