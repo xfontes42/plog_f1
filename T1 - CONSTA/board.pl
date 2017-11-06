@@ -357,25 +357,42 @@ goal_doubles(Board_In, X_S, Y_S, Piece_D, Element_S, Points_White, Points_Black)
   set_element_at(Board_In, X_S, Y_S, Element_S, Board_To_Evaluate),
   eval_board(Board_To_Evaluate, Points_White, Points_Black).
 
-% choose_better_move(+Board_In, -Board_Out, +Piece_S, +Piece_D, +Difficulty)
-choose_better_move(Board_In, Board_Out, Piece_S, Piece_D, _Difficulty):-
-  current_player(Player),
 
+% select_optimum_move(+List_Full, -Move)
+select_optimum_move(List_Full, Move):-
+  board_size(Winning_Points),
+
+  current_player(Player).
+  % Points_White_D-Points_Black_D-X_D-Y_D-Element_D-X_D-Y_D-Element_D
+  % Points_White_S-Points_Black_S-X_S1-Y_S1-Element_S1-X_S2-Y_S2-Element_S2
+
+  % SE WHITE
+      % GUARDAR ULTIMOS MAIORES ELEMENTOS DA LISTA
+      % DESTES, ESCOLHER O PRIMEIRO (MAXIMO WHITE COM CORRESPONDENTE MINIMO BLACK)
+  % SE BLACK
+      % GUARDAR PRIMEIROS MENORES ELEMENTOS DA LISTA
+      % DESTES, ESCOLHER O ULTIMO (MINIMO WHITE COM MAXIMO BLACK)
+
+
+% choose_better_move(+Board_In, -Board_Out, +Piece_S, +Piece_D, +Difficulty)
+choose_better_move(Board_In, Board_Out, Piece_S, Piece_D, Difficulty):-
   setof(
-    Points_White_D-Points_Black_D-X_D-Y_D-Element_D,
+    Points_White_D-Points_Black_D-X_D-Y_D-Element_D-X_D-Y_D-Element_D,
     goal_doubles(Board_In, X_D, Y_D, Piece_D, Element_D, Points_White_D, Points_Black_D),
     List_Doubles
   ),
-
-  write(List_Doubles),
-
+  % write(List_Doubles),
   setof(
     Points_White_S-Points_Black_S-X_S1-Y_S1-Element_S1-X_S2-Y_S2-Element_S2,
     goal_singles(Board_In, X_S1, Y_S1, Element_S1, X_S2, Y_S2, Element_S2, Piece_S, Points_White_S, Points_Black_S),
     List_Singles
   ),
-
-  write(List_Singles)
+  % write(List_Singles),
+  append(List_Singles,List_Doubles,List_Temp),
+  sort(List_Temp,List_Full),
+  % write(List_Full),
+  select_optimum_move(List_Full, Move)
+  % make MOVE
   .
 
   % eval_board([[ empty, empty, empty],
