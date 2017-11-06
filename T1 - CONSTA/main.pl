@@ -28,24 +28,38 @@ play_human_piece(Board_In, Board_Out, Piece_To_Play):-
 
 % play_computer_piece(+Board_In, -Board_Out, +Piece_S, +Piece_D, +Difficulty)
 play_computer_piece(Board_In, Board_Out, Piece_S, Piece_D, Difficulty):-
-  setof(X_S-Y_S-Element_S, valid_move(Board_In, X_S, Y_S, Piece_S, Element_S), List_Singles),
-  setof(X_D-Y_D-New_Element_D, valid_move(Board_In, X_D, Y_D, Piece_D, New_Element_D), List_Doubles),
-  length(List_Singles, Size_Singles),
-  length(List_Doubles, Size_Doubles),
-  random(0,Size_Doubles,Index_Doubles), !,
   ite(
-  (Size_Singles @< 2),
-  (nth0(Index_Doubles, List_Doubles, X_Play-Y_Play-New_Element_Play),
-    set_element_at(Board_In, X_Play, Y_Play, New_Element_Play, Board_Out)),
-  (random(0,2,Choose_One),
-    ite((Choose_One == 0),
-        ((generate_random(0,Size_Singles,Index_Singles,Index_Singles_2),
-          nth0(Index_Singles, List_Singles, X_Play-Y_Play-New_Element_Play),
-          set_element_at(Board_In, X_Play, Y_Play, New_Element_Play, Board_Temp),
-          nth0(Index_Singles_2, List_Singles, X_Play_2-Y_Play_2-New_Element_Play_2),
-          set_element_at(Board_Temp,X_Play_2, Y_Play_2, New_Element_Play_2, Board_Out))),
-        (nth0(Index_Doubles, List_Doubles, X_Play-Y_Play-New_Element_Play),
-          set_element_at(Board_In, X_Play, Y_Play, New_Element_Play, Board_Out))))
+    % IF
+    (Difficulty == 1),
+    % THEN
+    (
+      setof(X_S-Y_S-Element_S, valid_move(Board_In, X_S, Y_S, Piece_S, Element_S), List_Singles),
+      setof(X_D-Y_D-New_Element_D, valid_move(Board_In, X_D, Y_D, Piece_D, New_Element_D), List_Doubles),
+      length(List_Singles, Size_Singles),
+      length(List_Doubles, Size_Doubles),
+      random(0,Size_Doubles,Index_Doubles), !,
+      ite(
+      (Size_Singles @< 2),
+      (nth0(Index_Doubles, List_Doubles, X_Play-Y_Play-New_Element_Play),
+        set_element_at(Board_In, X_Play, Y_Play, New_Element_Play, Board_Out)),
+      (random(0,2,Choose_One),
+        ite((Choose_One == 0),
+            ((generate_random(0,Size_Singles,Index_Singles,Index_Singles_2),
+              nth0(Index_Singles, List_Singles, X_Play-Y_Play-New_Element_Play),
+              set_element_at(Board_In, X_Play, Y_Play, New_Element_Play, Board_Temp),
+              nth0(Index_Singles_2, List_Singles, X_Play_2-Y_Play_2-New_Element_Play_2),
+              set_element_at(Board_Temp,X_Play_2, Y_Play_2, New_Element_Play_2, Board_Out))),
+            (nth0(Index_Doubles, List_Doubles, X_Play-Y_Play-New_Element_Play),
+              set_element_at(Board_In, X_Play, Y_Play, New_Element_Play, Board_Out))))
+      )
+    ),
+    % ELSE
+    (
+      % Board_In, Board_Out, Piece_S, Piece_D, Difficulty
+      choose_better_move(Board_In, Board_Out, Piece_S, Piece_D, Difficulty),
+      write('Not gonna play anything...'), nl,
+      duplicate(Board_In, Board_Out)
+    )
   ).
   %sleep(0.2).
   % get_code(_).
@@ -126,5 +140,5 @@ consta_game :-
     start_game(Board),
     play_first_round(Board, Board_Out, Mode),
     game_cycle(Board_Out, Mode)))),
-  once(it(Mode == 4, select_dificulty(_Dificulty))),
+  once(it(Mode == 4, (select_dificulty(Difficulty), set_game_difficulty(Difficulty)))),
   once(ite(Mode == 5, true,fail)).

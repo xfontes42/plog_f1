@@ -279,12 +279,20 @@ eval_board_white(Matrix, Number_White):-
   max_points(Number_White).
 
 % eval_board(+Matrix, -Number_Black, -Number_White)
-eval_board(Matrix, Number_Black, Number_White):-
+eval_board(Matrix, Number_White, Number_Black):-
   set_max_points(0),
-  eval_board_black(Matrix, Number_Black),
+  ite(
+    (eval_board_black(Matrix, Number_Black_2)),
+    (Number_Black is Number_Black_2),
+    (Number_Black is 0)
+  ),
   % write('passei black'), nl,
   set_max_points(0),
-  eval_board_white(Matrix, Number_White),
+  ite(
+    (eval_board_white(Matrix, Number_White_2)),
+    (Number_White is Number_White_2),
+    (Number_White is 0)
+  ),
   % write('passei white'), nl,
   set_max_points(0).
   % limit(Number_Black_2, 0, 1000, Number_Black),
@@ -333,6 +341,75 @@ check_win_white([First_Row|Rest]):-
   X is 0,
   logic_or(get_element_at([First_Row|Rest], X, Y, white), get_element_at([First_Row|Rest], X, Y, white2)),
   search_white([First_Row|Rest], Rest, X, Y).
+
+% goal_singles(+Board_In, -X_S1, -Y_S1, -Element_S1, -X_S2, -Y_S2, -Element_S2, +Piece_S, -Points_White_S, -Points_Black_S)
+goal_singles(Board_In, X_S1, Y_S1, Element_S1, X_S2, Y_S2, Element_S2, Piece_S, Points_White_S, Points_Black_S):-
+  valid_move(Board_In, X_S1, Y_S1, Piece_S, Element_S1),
+  valid_move(Board_In, X_S2, Y_S2, Piece_S, Element_S2),
+  (X_S1 \== X_S2; Y_S1 \== Y_S2),
+  set_element_at(Board_In, X_S1, Y_S1, Element_S1, Board_Temp),
+  set_element_at(Board_Temp, X_S2, Y_S2, Element_S2, Board_To_Evaluate),
+  eval_board(Board_To_Evaluate, Points_White_S, Points_Black_S).
+
+% goal_doubles(+Board_In, -X_S, -Y_S, +Piece_D, -Element_S, -Points_White, -Points_Black)
+goal_doubles(Board_In, X_S, Y_S, Piece_D, Element_S, Points_White, Points_Black):-
+  valid_move(Board_In, X_S, Y_S, Piece_D, Element_S),
+  set_element_at(Board_In, X_S, Y_S, Element_S, Board_To_Evaluate),
+  eval_board(Board_To_Evaluate, Points_White, Points_Black).
+
+% choose_better_move(+Board_In, -Board_Out, +Piece_S, +Piece_D, +Difficulty)
+choose_better_move(Board_In, Board_Out, Piece_S, Piece_D, _Difficulty):-
+  current_player(Player),
+
+  setof(
+    Points_White_D-Points_Black_D-X_D-Y_D-Element_D,
+    goal_doubles(Board_In, X_D, Y_D, Piece_D, Element_D, Points_White_D, Points_Black_D),
+    List_Doubles
+  ),
+
+  write(List_Doubles),
+
+  setof(
+    Points_White_S-Points_Black_S-X_S1-Y_S1-Element_S1-X_S2-Y_S2-Element_S2,
+    goal_singles(Board_In, X_S1, Y_S1, Element_S1, X_S2, Y_S2, Element_S2, Piece_S, Points_White_S, Points_Black_S),
+    List_Singles
+  ),
+
+  write(List_Singles)
+  .
+
+  % eval_board([[ empty, empty, empty],
+  %                    [ empty, empty, empty],
+  %                    [ empty, empty, white]], X2, Y2).
+
+
+ % choose_better_move([[empty, empty, empty],[empty, empty, empty],[empty, empty, empty]], B, black, black2, 2).
+
+  % setof(X_S-Y_S-Element_S, valid_move(Board_In, X_S, Y_S, Piece_S, Element_S), List_Singles),
+  % setof(X_D-Y_D-New_Element_D, valid_move(Board_In, X_D, Y_D, Piece_D, New_Element_D), List_Doubles),
+  % length(List_Singles, Size_Singles),
+  % length(List_Doubles, Size_Doubles),
+  % random(0,Size_Doubles,Index_Doubles), !,
+  % ite(
+  % (Size_Singles @< 2),
+  % (nth0(Index_Doubles, List_Doubles, X_Play-Y_Play-New_Element_Play),
+  %   set_element_at(Board_In, X_Play, Y_Play, New_Element_Play, Board_Out)),
+  % (random(0,2,Choose_One),
+  %   ite((Choose_One == 0),
+  %       ((generate_random(0,Size_Singles,Index_Singles,Index_Singles_2),
+  %         nth0(Index_Singles, List_Singles, X_Play-Y_Play-New_Element_Play),
+  %         set_element_at(Board_In, X_Play, Y_Play, New_Element_Play, Board_Temp),
+  %         nth0(Index_Singles_2, List_Singles, X_Play_2-Y_Play_2-New_Element_Play_2),
+  %         set_element_at(Board_Temp,X_Play_2, Y_Play_2, New_Element_Play_2, Board_Out))),
+  %       (nth0(Index_Doubles, List_Doubles, X_Play-Y_Play-New_Element_Play),
+  %         set_element_at(Board_In, X_Play, Y_Play, New_Element_Play, Board_Out))))
+  % )
+
+
+  % eval_board([[ empty, empty, empty],
+  %             [ empty, black, empty],
+  %             [ empty, empty, empty]], X2, Y2).
+
 
 % eval_board([[ white, empty, white, empty, black],
 %             [ empty, white, black2, empty, empty],
