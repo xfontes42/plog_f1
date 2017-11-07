@@ -132,6 +132,46 @@ valid_move(Matrix, X, Y, Value, New_Element):-
   sum_pieces(Current_Piece, Value, New_Element),
   check_cross_cut(Matrix, X, Y, New_Element).
 
+% black_has_path(+Matrix, +New_X, +New_Y)
+black_has_path(Matrix, New_X, New_Y):-
+  New_X @>= 0,
+  length(Matrix, Size_Matrix),
+  New_X @< Size_Matrix,
+  get_element_at(Matrix, New_X, New_Y, Piece),
+  Piece \== white,
+  Piece \== white2.
+
+% black_up_okay(+Matrix, +X, +Current_Y)
+black_up_okay(_Matrix, _X, Current_Y):- Current_Y == 0.
+black_up_okay(Matrix, X, Current_Y):-
+  New_Y is Current_Y-1,
+  X_Left is X-1,
+  X_Right is X+1,
+  (black_has_path(Matrix, X_Left, New_Y);
+    black_has_path(Matrix, X_Right, New_Y);
+    black_has_path(Matrix, X, New_Y)
+   ).
+
+% black_down_okay(+Matrix, +X, +Current_Y)
+black_down_okay(Matrix, _X, Current_Y):-
+  length(Matrix, Size_Matrix),
+  Index is Size_Matrix-1,
+  Current_Y == Index.
+black_down_okay(Matrix, X, Current_Y):-
+  New_Y is Current_Y+1,
+  X_Left is X-1,
+  X_Right is X+1,
+  (black_has_path(Matrix, X_Left, New_Y);
+    black_has_path(Matrix, X_Right, New_Y);
+    black_has_path(Matrix, X, New_Y)
+   ).
+
+% dead_end_black(+Matrix, +X, +Current_Y)
+dead_end_black(_Matrix, _X, _Current_Y).
+% dead_end_black(Matrix, X, Current_Y):-
+%   black_up_okay(Matrix, X, Current_Y),
+%   black_down_okay(Matrix, X, Current_Y).
+
 % get_path_points_black(+Matrix, +Secondary_Matrix, +X_Black, +Current_Y, ?Current_Points)
 get_path_points_black(_,[],_,_,Current_Points):-
   update_max_points(Current_Points).
@@ -143,47 +183,62 @@ get_path_points_black(Matrix, [Row_Ahead_Of_Current_Y| Rest], X , Current_Y, Cur
   X_Diagonal_Left is X-1,
   X_Diagonal_Right is X+1,
   ite(
-    % IF
-    (logic_or(nth0(X_Found,Row_Ahead_Of_Current_Y,black), nth0(X_Found, Row_Ahead_Of_Current_Y, black2))),
-    % THEN
-    (
-      logic_or(nth0(X_Found_2,Row_Ahead_Of_Current_Y,black), nth0(X_Found_2, Row_Ahead_Of_Current_Y, black2)),
-      ite(
-        % IF
-        ((X_Found_2 == X_Diagonal_Left);(X_Found_2 == X_Diagonal_Right);(X_Found_2 == X)),
-        % THEN
-        (
-          % Verificar se ganha possivel crosscut
-          get_element_at(Matrix, X_Found_2, New_Y, Elem1),
-          get_element_at(Matrix, X_Found_2, Current_Y, Elem2),
-          get_element_at(Matrix, X, New_Y, Elem3),
-          get_element_at(Matrix, X, Current_Y, Elem4),
-          get_points_from_square(Elem1, Elem2, Elem3, Elem4, Points_White, Points_Black),
-          ite(
-            % IF
-            (Points_White @=< Points_Black),
-            % THEN - black can move forward
-            (
-              New_Current_Points is Current_Points+1,
-              update_max_points(New_Current_Points),
-              get_path_points_black(Matrix, Rest, X_Found_2, New_Y, New_Current_Points)
-            ),
-            % ELSE - black is not in control, move forward but reset max
-            (
-              get_path_points_black(Matrix, Rest, X_Found_2, New_Y, 1)
+  % IF
+  (dead_end_black(Matrix, X, Current_Y)),
+  % THEN
+  (
+    ite(
+      % IF
+      (logic_or(nth0(X_Found,Row_Ahead_Of_Current_Y,black), nth0(X_Found, Row_Ahead_Of_Current_Y, black2))),
+      % THEN
+      (
+        logic_or(nth0(X_Found_2,Row_Ahead_Of_Current_Y,black), nth0(X_Found_2, Row_Ahead_Of_Current_Y, black2)),
+        ite(
+          % IF
+          ((X_Found_2 == X_Diagonal_Left);(X_Found_2 == X_Diagonal_Right);(X_Found_2 == X)),
+          % THEN
+          (
+            % Verificar se ganha possivel crosscut
+            get_element_at(Matrix, X_Found_2, New_Y, Elem1),
+            get_element_at(Matrix, X_Found_2, Current_Y, Elem2),
+            get_element_at(Matrix, X, New_Y, Elem3),
+            get_element_at(Matrix, X, Current_Y, Elem4),
+            get_points_from_square(Elem1, Elem2, Elem3, Elem4, Points_White, Points_Black),
+            ite(
+              % IF
+              (Points_White @=< Points_Black),
+              % THEN - black can move forward
+              (
+                % update_max_points(New_Current_Points)
+                New_Current_Points is Current_Points+1,
+                update_max_points(New_Current_Points),
+                get_path_points_black(Matrix, Rest, X_Found_2, New_Y, New_Current_Points)
+              ),
+              % ELSE - black is not in control, move forward but reset max
+              (
+                get_path_points_black(Matrix, Rest, X_Found_2, New_Y, 1)
+              )
             )
+          ),
+          % ELSE - found black pieces but not on a path
+          (
+            get_path_points_black(Matrix, Rest, X_Found_2, New_Y, 1)
           )
         ),
-        % ELSE - found black pieces but not on a path
-        (
-          get_path_points_black(Matrix, Rest, X_Found_2, New_Y, 1)
-        )
+        fail
       ),
-      fail
-    ),
-    % ELSE - did not find black pieces in this row, restart
-    (New_Y_Rest is New_Y + 1, searh_black_points(Matrix, Rest, New_Y_Rest))
+      % ELSE - did not find black pieces in this row, restart
+      (New_Y_Rest is New_Y + 1, searh_black_points(Matrix, Rest, New_Y_Rest))
+    )
+  ),
+  % ELSE
+  (
+    % update_max_points(Current_Points),
+    fail
+  )
   ).
+
+
 
 % searh_black_points(+Matrix, +Secondary_Matrix, Current_Line)
 searh_black_points(_, [], _).
@@ -345,9 +400,9 @@ check_win_white([First_Row|Rest]):-
 % goal_singles(+Board_In, -X_S1, -Y_S1, -Element_S1, -X_S2, -Y_S2, -Element_S2, +Piece_S, -Points_White_S, -Points_Black_S)
 goal_singles(Board_In, X_S1, Y_S1, Element_S1, X_S2, Y_S2, Element_S2, Piece_S, Points_White_S, Points_Black_S):-
   valid_move(Board_In, X_S1, Y_S1, Piece_S, Element_S1),
-  valid_move(Board_In, X_S2, Y_S2, Piece_S, Element_S2),
-  (X_S1 < X_S2; Y_S1 < Y_S2),
   set_element_at(Board_In, X_S1, Y_S1, Element_S1, Board_Temp),
+  valid_move(Board_Temp, X_S2, Y_S2, Piece_S, Element_S2),
+  (X_S1 < X_S2; Y_S1 < Y_S2),
   set_element_at(Board_Temp, X_S2, Y_S2, Element_S2, Board_To_Evaluate),
   eval_board(Board_To_Evaluate, Points_White_S, Points_Black_S).
 
@@ -434,7 +489,6 @@ choose_better_move(Board_In, Board_Out, Piece_S, Piece_D, _Difficulty):-
   % eval_board([[ empty, empty, empty],
   %             [ empty, black, empty],
   %             [ empty, empty, empty]], X2, Y2).
-
 
 % eval_board([[ white, empty, white, empty, black],
 %             [ empty, white, black2, empty, empty],

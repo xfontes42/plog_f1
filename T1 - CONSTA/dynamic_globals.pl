@@ -9,7 +9,7 @@ game_mode(1).
 game_difficulty(1).
 board_size(9).
 current_player(black).
-user_play_as(black).
+user_play_as(white).
 max_points(0).
 
 % set_max_points(+New_Max)
