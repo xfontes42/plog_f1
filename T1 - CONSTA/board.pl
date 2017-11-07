@@ -346,7 +346,7 @@ check_win_white([First_Row|Rest]):-
 goal_singles(Board_In, X_S1, Y_S1, Element_S1, X_S2, Y_S2, Element_S2, Piece_S, Points_White_S, Points_Black_S):-
   valid_move(Board_In, X_S1, Y_S1, Piece_S, Element_S1),
   valid_move(Board_In, X_S2, Y_S2, Piece_S, Element_S2),
-  (X_S1 \== X_S2; Y_S1 \== Y_S2),
+  (X_S1 < X_S2; Y_S1 < Y_S2),
   set_element_at(Board_In, X_S1, Y_S1, Element_S1, Board_Temp),
   set_element_at(Board_Temp, X_S2, Y_S2, Element_S2, Board_To_Evaluate),
   eval_board(Board_To_Evaluate, Points_White_S, Points_Black_S).
@@ -357,14 +357,43 @@ goal_doubles(Board_In, X_S, Y_S, Piece_D, Element_S, Points_White, Points_Black)
   set_element_at(Board_In, X_S, Y_S, Element_S, Board_To_Evaluate),
   eval_board(Board_To_Evaluate, Points_White, Points_Black).
 
+% get_best_move(+List_Full, +Max_Points_White, -Move)
+get_best_move([First|Rest], Wanted_Points, Move):-
+  duplicate(First, Current_Points-_L1-_L2-_L3-_L4-_L5-_L6-_L7),
+  ite(
+    % IF
+    (Current_Points == Wanted_Points),
+    % THEN
+    (duplicate(First, Move)),
+    % ELSE
+    (get_best_move(Rest, Current_Points, Move))
+  ).
 
 % select_optimum_move(+List_Full, -Move)
 select_optimum_move(List_Full, Move):-
-  board_size(Winning_Points),
-
-  current_player(Player).
-  % Points_White_D-Points_Black_D-X_D-Y_D-Element_D-X_D-Y_D-Element_D
-  % Points_White_S-Points_Black_S-X_S1-Y_S1-Element_S1-X_S2-Y_S2-Element_S2
+  %board_size(Winning_Points),
+  current_player(Player),
+  length(List_Full, Size_List),
+  ite(
+  % IF
+  (Player == white),
+  % THEN
+  ( % BEST WHITE MOVE
+    % nth1(Size_List, List_Full, Move)
+    nth1(Size_List, List_Full, Min_Points_White-L1-L2-L3-L4-L5-L6-L7),
+    get_best_move(List_Full, Min_Points_White, Move),
+    write(Move), nl
+  ),
+  % ELSE
+  ( % BEST BLACK MOVE
+    nth0(0, List_Full, Min_Points_White-L1-L2-L3-L4-L5-L6-L7),
+    reverse(List_Full, List_Reversed),
+    get_best_move(List_Reversed, Min_Points_White, Move),
+    write(Move), nl
+  )
+  ).
+  % Points_White-Points_Black-X_D-Y_D-Element_D-X_D-Y_D-Element_D
+  % Points_White-Points_Black-X_S1-Y_S1-Element_S1-X_S2-Y_S2-Element_S2
 
   % SE WHITE
       % GUARDAR ULTIMOS MAIORES ELEMENTOS DA LISTA
@@ -373,9 +402,8 @@ select_optimum_move(List_Full, Move):-
       % GUARDAR PRIMEIROS MENORES ELEMENTOS DA LISTA
       % DESTES, ESCOLHER O ULTIMO (MINIMO WHITE COM MAXIMO BLACK)
 
-
 % choose_better_move(+Board_In, -Board_Out, +Piece_S, +Piece_D, +Difficulty)
-choose_better_move(Board_In, Board_Out, Piece_S, Piece_D, Difficulty):-
+choose_better_move(Board_In, Board_Out, Piece_S, Piece_D, _Difficulty):-
   setof(
     Points_White_D-Points_Black_D-X_D-Y_D-Element_D-X_D-Y_D-Element_D,
     goal_doubles(Board_In, X_D, Y_D, Piece_D, Element_D, Points_White_D, Points_Black_D),
@@ -391,9 +419,9 @@ choose_better_move(Board_In, Board_Out, Piece_S, Piece_D, Difficulty):-
   append(List_Singles,List_Doubles,List_Temp),
   sort(List_Temp,List_Full),
   % write(List_Full),
-  select_optimum_move(List_Full, Move)
-  % make MOVE
-  .
+  select_optimum_move(List_Full, _L1-_L2-X_1-Y_1-Element_1-X_2-Y_2-Element_2),
+  set_element_at(Board_In, X_1, Y_1, Element_1, Board_Temp),
+  set_element_at(Board_Temp, X_2, Y_2, Element_2, Board_Out).
 
   % eval_board([[ empty, empty, empty],
   %                    [ empty, empty, empty],
@@ -401,26 +429,6 @@ choose_better_move(Board_In, Board_Out, Piece_S, Piece_D, Difficulty):-
 
 
  % choose_better_move([[empty, empty, empty],[empty, empty, empty],[empty, empty, empty]], B, black, black2, 2).
-
-  % setof(X_S-Y_S-Element_S, valid_move(Board_In, X_S, Y_S, Piece_S, Element_S), List_Singles),
-  % setof(X_D-Y_D-New_Element_D, valid_move(Board_In, X_D, Y_D, Piece_D, New_Element_D), List_Doubles),
-  % length(List_Singles, Size_Singles),
-  % length(List_Doubles, Size_Doubles),
-  % random(0,Size_Doubles,Index_Doubles), !,
-  % ite(
-  % (Size_Singles @< 2),
-  % (nth0(Index_Doubles, List_Doubles, X_Play-Y_Play-New_Element_Play),
-  %   set_element_at(Board_In, X_Play, Y_Play, New_Element_Play, Board_Out)),
-  % (random(0,2,Choose_One),
-  %   ite((Choose_One == 0),
-  %       ((generate_random(0,Size_Singles,Index_Singles,Index_Singles_2),
-  %         nth0(Index_Singles, List_Singles, X_Play-Y_Play-New_Element_Play),
-  %         set_element_at(Board_In, X_Play, Y_Play, New_Element_Play, Board_Temp),
-  %         nth0(Index_Singles_2, List_Singles, X_Play_2-Y_Play_2-New_Element_Play_2),
-  %         set_element_at(Board_Temp,X_Play_2, Y_Play_2, New_Element_Play_2, Board_Out))),
-  %       (nth0(Index_Doubles, List_Doubles, X_Play-Y_Play-New_Element_Play),
-  %         set_element_at(Board_In, X_Play, Y_Play, New_Element_Play, Board_Out))))
-  % )
 
 
   % eval_board([[ empty, empty, empty],

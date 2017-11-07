@@ -55,10 +55,7 @@ play_computer_piece(Board_In, Board_Out, Piece_S, Piece_D, Difficulty):-
     ),
     % ELSE
     (
-      % Board_In, Board_Out, Piece_S, Piece_D, Difficulty
-      choose_better_move(Board_In, Board_Out, Piece_S, Piece_D, Difficulty),
-      write('Not gonna play anything...'), nl,
-      duplicate(Board_In, Board_Out)
+      choose_better_move(Board_In, Board_Out, Piece_S, Piece_D, Difficulty)
     )
   ).
   %sleep(0.2).
