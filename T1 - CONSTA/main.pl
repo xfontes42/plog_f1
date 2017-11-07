@@ -4,6 +4,7 @@
 :-include('draw_board.pl').
 :-include('user_inputs.pl').
 :-include('board.pl').
+:-include('game.pl').
 
 % menu(-Mode)
 menu(Mode) :-
