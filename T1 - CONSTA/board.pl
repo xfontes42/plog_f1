@@ -133,7 +133,7 @@ valid_move(Matrix, X, Y, Value, New_Element):-
   check_cross_cut(Matrix, X, Y, New_Element).
 
 % black_has_path(+Matrix, +New_X, +New_Y)
-black_has_path(Matrix, New_X, New_Y):-
+black_has_path_down(Matrix, New_X, New_Y):-
   New_X @>= 0,
   length(Matrix, Size_Matrix),
   New_X @< Size_Matrix,
@@ -142,15 +142,25 @@ black_has_path(Matrix, New_X, New_Y):-
   Piece \== white2,
   black_down_okay(Matrix, New_X, New_Y).
 
+% black_has_path_up(+Matrix, +New_X, +New_Y)
+black_has_path_up(Matrix, New_X, New_Y):-
+  New_X @>= 0,
+  length(Matrix, Size_Matrix),
+  New_X @< Size_Matrix,
+  get_element_at(Matrix, New_X, New_Y, Piece),
+  Piece \== white,
+  Piece \== white2,
+  black_up_okay(Matrix, New_X, New_Y).
+
 % black_up_okay(+Matrix, +X, +Current_Y)
 black_up_okay(_Matrix, _X, Current_Y):- Current_Y == 0.
 black_up_okay(Matrix, X, Current_Y):-
   New_Y is Current_Y-1,
   X_Left is X-1,
   X_Right is X+1,
-  (black_has_path(Matrix, X_Left, New_Y);
-    black_has_path(Matrix, X_Right, New_Y);
-    black_has_path(Matrix, X, New_Y)
+  (black_has_path_up(Matrix, X_Left, New_Y);
+    black_has_path_up(Matrix, X_Right, New_Y);
+    black_has_path_up(Matrix, X, New_Y)
    ).
 
 % black_down_okay(+Matrix, +X, +Current_Y)
@@ -162,14 +172,14 @@ black_down_okay(Matrix, X, Current_Y):-
   New_Y is Current_Y+1,
   X_Left is X-1,
   X_Right is X+1,
-  (black_has_path(Matrix, X_Left, New_Y);
-    black_has_path(Matrix, X_Right, New_Y);
-    black_has_path(Matrix, X, New_Y)
+  (black_has_path_down(Matrix, X_Left, New_Y);
+    black_has_path_down(Matrix, X_Right, New_Y);
+    black_has_path_down(Matrix, X, New_Y)
    ).
 
 % dead_end_black(+Matrix, +X, +Current_Y)
 dead_end_black(Matrix, X, Current_Y):-
-  % black_up_okay(Matrix, X, Current_Y),
+  black_up_okay(Matrix, X, Current_Y),
   black_down_okay(Matrix, X, Current_Y).
 
 % get_path_points_black(+Matrix, +Secondary_Matrix, +X_Black, +Current_Y, ?Current_Points)
@@ -262,7 +272,7 @@ eval_board_black(Matrix, Number_Black):-
   max_points(Number_Black).
 
 % white_has_path(+Matrix, +New_X, +New_Y)
-white_has_path(Matrix, New_X, New_Y):-
+white_has_path_right(Matrix, New_X, New_Y):-
   New_Y @>= 0,
   length(Matrix, Size_Matrix),
   New_Y @< Size_Matrix,
@@ -271,15 +281,25 @@ white_has_path(Matrix, New_X, New_Y):-
   Piece \== black2,
   white_right_okay(Matrix, New_X, New_Y).
 
+% white_has_path_left(Matrix, New_X, New_Y)
+white_has_path_left(Matrix, New_X, New_Y):-
+  New_Y @>= 0,
+  length(Matrix, Size_Matrix),
+  New_Y @< Size_Matrix,
+  get_element_at(Matrix, New_X, New_Y, Piece),
+  Piece \== black,
+  Piece \== black2,
+  white_left_okay(Matrix, New_X, New_Y).
+
 % white_left_okay(+Matrix, +X, +Current_Y)
 white_left_okay(_Matrix, X, _Y):- X == 0.
 white_left_okay(Matrix, X, Y):-
   New_X is X-1,
   Y_Up is Y-1,
   Y_Down is Y+1,
-  (white_has_path(Matrix, New_X, Y_Up);
-    white_has_path(Matrix, New_X, Y_Down);
-    white_has_path(Matrix, New_X, Y)
+  (white_has_path_left(Matrix, New_X, Y_Up);
+    white_has_path_left(Matrix, New_X, Y_Down);
+    white_has_path_left(Matrix, New_X, Y)
    ).
 
 % white_right_okay(+Matrix, +X, +Y)
@@ -291,14 +311,14 @@ white_right_okay(Matrix, X, Y):-
   New_X is X+1,
   Y_Up is Y-1,
   Y_Down is Y+1,
-  (white_has_path(Matrix, New_X, Y_Up);
-    white_has_path(Matrix, New_X, Y_Down);
-    white_has_path(Matrix, New_X, Y)
+  (white_has_path_right(Matrix, New_X, Y_Up);
+    white_has_path_right(Matrix, New_X, Y_Down);
+    white_has_path_right(Matrix, New_X, Y)
    ).
 
 % dead_end_white(+Matrix, +X, +Current_Y)
 dead_end_white(Matrix, X, Y):-
-  % white_left_okay(Matrix, X, Y),
+  white_left_okay(Matrix, X, Y),
   white_right_okay(Matrix, X, Y).
 
 % get_path_points_black(+Matrix, +Secondary_Matrix, +X_Black, +Current_Y, ?Current_Points)
@@ -360,7 +380,6 @@ get_path_points_white(Matrix, [_Row_Ahead_Of_Current_Y| Rest], Current_X , Y, Cu
   % ELSE
   (fail)
   ).
-
 
 % searh_white_points(+Matrix, +Secondary_Matrix, Current_Line)
 searh_white_points(_, [], _).
