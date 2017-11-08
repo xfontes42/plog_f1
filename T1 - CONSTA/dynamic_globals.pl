@@ -6,7 +6,7 @@
 :-dynamic max_points/1.
 
 game_mode(1).
-game_difficulty(1).
+game_difficulty(2).
 board_size(9).
 current_player(black).
 user_play_as(white).
@@ -66,3 +66,6 @@ clr:-
 % load
 load:-
   consult('C:/Projects/plog_f1/T1 - CONSTA/main.pl').
+
+reload:-
+  reconsult('C:/Projects/plog_f1/T1 - CONSTA/main.pl').
