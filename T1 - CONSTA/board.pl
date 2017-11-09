@@ -220,10 +220,25 @@ get_path_points_black(Matrix, [Row_Ahead_Of_Current_Y| Rest], X , Current_Y, Cur
               (Points_White @=< Points_Black),
               % THEN - black can move forward
               (
-                % update_max_points(New_Current_Points)
-                New_Current_Points is Current_Points+1,
-                update_max_points(New_Current_Points),
-                get_path_points_black(Matrix, Rest, X_Found_2, New_Y, New_Current_Points)
+                ite(
+                % IF
+                  (
+                    (X_Found_2 == X_Diagonal_Left);(X_Found_2 == X_Diagonal_Right)
+                  ),
+                % THEN
+                  (
+                    New_Current_Points is Current_Points+3,
+                    update_max_points(New_Current_Points),
+                    get_path_points_black(Matrix, Rest, X_Found_2, New_Y, New_Current_Points)
+                  ),
+                % ELSE
+                  (
+                    New_Current_Points_2 is Current_Points+4,
+                    update_max_points(New_Current_Points_2),
+                    get_path_points_black(Matrix, Rest, X_Found_2, New_Y, New_Current_Points_2)
+                  )
+                )
+
               ),
               % ELSE - black is not in control, move forward but reset max
               (
@@ -356,9 +371,22 @@ get_path_points_white(Matrix, [_Row_Ahead_Of_Current_Y| Rest], Current_X , Y, Cu
               (Points_Black @=< Points_White),
               % THEN - black can move forward
               (
-                New_Current_Points is Current_Points+1,
-                update_max_points(New_Current_Points),
-                get_path_points_white(Matrix, Rest, New_X, Y_Found, New_Current_Points)
+                ite(
+                % IF
+                  ((Y_Found == Y_Diagonal_Up);(Y_Found == Y_Diagonal_Down)),
+                % THEN
+                  (
+                    New_Current_Points is Current_Points+3,
+                    update_max_points(New_Current_Points),
+                    get_path_points_white(Matrix, Rest, New_X, Y_Found, New_Current_Points)
+                  ),
+                % ELSE
+                  (
+                    New_Current_Points_2 is Current_Points+4,
+                    update_max_points(New_Current_Points_2),
+                    get_path_points_white(Matrix, Rest, New_X, Y_Found, New_Current_Points_2)
+                  )
+                )
               ),
               % ELSE - black is not in control, move forward but reset max
               (

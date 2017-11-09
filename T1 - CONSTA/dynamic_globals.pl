@@ -6,7 +6,7 @@
 :-dynamic max_points/1.
 
 game_mode(1).
-game_difficulty(2).
+game_difficulty(1).
 board_size(9).
 current_player(black).
 user_play_as(white).
