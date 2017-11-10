@@ -465,6 +465,24 @@ search_black(Matrix, [Current_Line|Rest], X, Y):-
   get_points_from_square(Elem1, Elem2, Elem3, Elem4, Points_White, Points_Black),
   Points_White @=< Points_Black,
   search_black(Matrix, Rest, X2, Y2).
+  % ((Y2 is Y+1,
+  % logic_or(nth0(X2, Current_Line, black), nth0(X2, Current_Line, black2)),
+  % X_Diagonal_Left is X-1,
+  % X_Diagona_Right is X+1,
+  % ((X2 == X_Diagonal_Left);(X2 == X_Diagona_Right);(X2 == X)),
+  % get_element_at(Matrix, X2, Y, Elem1),
+  % get_element_at(Matrix, X2, Y2, Elem2),
+  % get_element_at(Matrix, X, Y, Elem3),
+  % get_element_at(Matrix, X, Y2, Elem4),
+  % get_points_from_square(Elem1, Elem2, Elem3, Elem4, Points_White, Points_Black),
+  % Points_White @=< Points_Black,
+  % search_black(Matrix, Rest, X2, Y2))
+  % ;
+  % (
+  % X__2 is X+1,
+  % logic_or(get_element_at(Matrix, X__2, Y, black), get_element_at(Matrix, X__2, Y, black2)),
+  % search_black(Matrix, [Current_Line|Rest], X__2, Y)
+  % )).
 
 % check_win_black(+Matrix)
 check_win_black([First_Row|Rest]):-
@@ -509,46 +527,95 @@ goal_doubles(Board_In, X_S, Y_S, Piece_D, Element_S, Points_White, Points_Black)
   set_element_at(Board_In, X_S, Y_S, Element_S, Board_To_Evaluate),
   eval_board(Board_To_Evaluate, Points_White, Points_Black).
 
-% get_best_move(+List_Full, +Max_Points_White, -Move)
-get_best_move([First|Rest], Wanted_Points, Move):-
+get_best_move_aux([],_,_).
+get_best_move_aux([First|Rest], Wanted_Points, List_Moves):-
   duplicate(First, Current_Points-_L1-_L2-_L3-_L4-_L5-_L6-_L7),
   ite(
     % IF
     (Current_Points == Wanted_Points),
     % THEN
-    (duplicate(First, Move)),
+    (get_best_move_aux(Rest, Wanted_Points, List_Temp), append(List_Temp, [First], List_Moves)),
     % ELSE
-    (get_best_move(Rest, Wanted_Points, Move))
+    (get_best_move_aux(Rest, Wanted_Points, List_Moves))
+  ).
+
+
+% get_best_move(+List_Full, +Max_Points_White, -Move)
+get_best_move([], _Wanted_Points, _Wanted_Oposite_Points, []).
+get_best_move([First|Rest], Wanted_Points, Wanted_Oposite_Points, List_Moves):-
+  % get_best_move_aux(List_Full, Wanted_Points, List_Best),
+  % write(List_Best),
+  % length(List_Best, Size_Best),
+  % random(0, Size_Best, Index),
+  % nth0(Index, List_Best, Move).
+  duplicate(First, Current_Points-Current_Points_Oposite-_L2-_L3-_L4-_L5-_L6-_L7),
+  ite(
+    % IF
+    (Current_Points == Wanted_Points),
+    % THEN
+    (
+      ite(
+      % IF
+      (nonvar(Wanted_Oposite_Points)),
+      % THEN
+      (
+        ite(
+          (Current_Points_Oposite==Wanted_Oposite_Points),
+          (get_best_move(Rest, Wanted_Points, Wanted_Oposite_Points, List_Temp), append(List_Temp, [First], List_Moves)),
+          (get_best_move(Rest, Wanted_Points, Wanted_Oposite_Points, List_Moves))
+        )
+      ),
+      % ELSE
+      (
+        get_best_move([First|Rest], Wanted_Points, Current_Points_Oposite, List_Moves)
+      )
+      )
+    ),
+    % ELSE
+    (get_best_move(Rest, Wanted_Points, Wanted_Oposite_Points, List_Moves))
   ).
 
 % select_optimum_move(+List_Full, -Move)
 select_optimum_move(List_Full, Move):-
-  %board_size(Winning_Points),
-  current_player(Player),
   length(List_Full, Size_List),
-  ite(
-  % IF
-  (Player == white),
-  % THEN
-  ( % BEST WHITE MOVE
-    % nth1(Size_List, List_Full, Move)
-    nth1(Size_List, List_Full, Max_Points_White-L1-L2-L3-L4-L5-L6-L7),
-    % write(Max_Points_White), nl,
-    get_best_move(List_Full, Max_Points_White, Move),
-    % write('List: '), nl, write(List_Full),
-    % write('Best move: '),
-    write(Move), nl
-  ),
-  % ELSE
-  ( % BEST BLACK MOVE
-    nth0(0, List_Full, Min_Points_White-L1-L2-L3-L4-L5-L6-L7),
-    reverse(List_Full, List_Reversed),
-    get_best_move(List_Reversed, Min_Points_White, Move),
-    % write('Reversed: '), nl, write(List_Reversed),
-    % write('Best move: '),
-    write(Move), nl
-  )
-  ).
+  nth1(Size_List, List_Full, Max_Points-_L1-_L2-_L3-_L4-_L5-_L6-_L7),
+  get_best_move(List_Full, Max_Points, _X, List_Best),
+
+  write(List_Best),
+  length(List_Best, Size_Best),
+  random(0, Size_Best, Index),
+  nth0(Index, List_Best, Move).
+
+  %board_size(Winning_Points),
+  % current_player(Player),
+  % length(List_Full, Size_List),
+  % ite(
+  % % IF
+  % (Player == white),
+  % % THEN
+  % ( % BEST WHITE MOVE
+  %   % nth1(Size_List, List_Full, Move)
+  %   nth1(Size_List, List_Full, Max_Points_White-L1-L2-L3-L4-L5-L6-L7),
+  %   % write(Max_Points_White), nl,
+  %   get_best_move(List_Full, Max_Points_White, Move),
+  %   % write('List: '), nl, write(List_Full),
+  %   % write('Best move: '),
+  %   write(Move), nl
+  % ),
+  % % ELSE
+  % ( % BEST BLACK MOVE
+  %   nth0(0, List_Full, Min_Points_White-L1-L2-L3-L4-L5-L6-L7),
+  %   reverse(List_Full, List_Reversed),
+  %   get_best_move(List_Reversed, Min_Points_White, Move),
+  %   % write('Reversed: '), nl, write(List_Reversed),
+  %   % write('Best move: '),
+  %   write(Move), nl
+  % )
+  % ).
+
+
+
+
   % Points_White-Points_Black-X_D-Y_D-Element_D-X_D-Y_D-Element_D
   % Points_White-Points_Black-X_S1-Y_S1-Element_S1-X_S2-Y_S2-Element_S2
 
@@ -561,24 +628,57 @@ select_optimum_move(List_Full, Move):-
 
 % choose_better_move(+Board_In, -Board_Out, +Piece_S, +Piece_D, +Difficulty)
 choose_better_move(Board_In, Board_Out, Piece_S, Piece_D, _Difficulty):-
-  setof(
-    Points_White_D-Points_Black_D-X_D-Y_D-Element_D-X_D-Y_D-Element_D,
-    goal_doubles(Board_In, X_D, Y_D, Piece_D, Element_D, Points_White_D, Points_Black_D),
-    List_Doubles
+  current_player(Player),
+  ite(
+  % IF
+  (Player == white),
+  % THEN
+  (
+    setof(
+      Points_White_D-Points_Black_D-X_D-Y_D-Element_D-X_D-Y_D-Element_D,
+      goal_doubles(Board_In, X_D, Y_D, Piece_D, Element_D, Points_White_D, Points_Black_D),
+      List_Doubles
+    ),
+    % write(List_Doubles),
+    setof(
+      Points_White_S-Points_Black_S-X_S1-Y_S1-Element_S1-X_S2-Y_S2-Element_S2,
+      goal_singles(Board_In, X_S1, Y_S1, Element_S1, X_S2, Y_S2, Element_S2, Piece_S, Points_White_S, Points_Black_S),
+      List_Singles
+    ),
+    % write(List_Singles),
+    append(List_Singles,List_Doubles,List_Temp),
+    sort(List_Temp, List_Full),
+    % write(List_Full),
+    select_optimum_move(List_Full, _L1-_L2-X_1-Y_1-Element_1-X_2-Y_2-Element_2),
+    set_element_at(Board_In, X_1, Y_1, Element_1, Board_Temp),
+    set_element_at(Board_Temp, X_2, Y_2, Element_2, Board_Out)
   ),
-  % write(List_Doubles),
-  setof(
-    Points_White_S-Points_Black_S-X_S1-Y_S1-Element_S1-X_S2-Y_S2-Element_S2,
-    goal_singles(Board_In, X_S1, Y_S1, Element_S1, X_S2, Y_S2, Element_S2, Piece_S, Points_White_S, Points_Black_S),
-    List_Singles
-  ),
-  % write(List_Singles),
-  append(List_Singles,List_Doubles,List_Temp),
-  sort(List_Temp,List_Full),
-  % write(List_Full),
-  select_optimum_move(List_Full, _L1-_L2-X_1-Y_1-Element_1-X_2-Y_2-Element_2),
-  set_element_at(Board_In, X_1, Y_1, Element_1, Board_Temp),
-  set_element_at(Board_Temp, X_2, Y_2, Element_2, Board_Out).
+  % ELSE
+  (
+    setof(
+      Points_Black_D-Points_White_D-X_D-Y_D-Element_D-X_D-Y_D-Element_D,
+      goal_doubles(Board_In, X_D, Y_D, Piece_D, Element_D, Points_White_D, Points_Black_D),
+      List_Doubles
+    ),
+    % write(List_Doubles),
+    setof(
+      Points_Black_S-Points_White_S-X_S1-Y_S1-Element_S1-X_S2-Y_S2-Element_S2,
+      goal_singles(Board_In, X_S1, Y_S1, Element_S1, X_S2, Y_S2, Element_S2, Piece_S, Points_White_S, Points_Black_S),
+      List_Singles
+    ),
+    % write(List_Singles),
+    append(List_Singles,List_Doubles,List_Temp),
+    sort(List_Temp, List_Full),
+    % write(List_Full),
+    select_optimum_move(List_Full, _L1-_L2-X_1-Y_1-Element_1-X_2-Y_2-Element_2),
+    set_element_at(Board_In, X_1, Y_1, Element_1, Board_Temp),
+    set_element_at(Board_Temp, X_2, Y_2, Element_2, Board_Out)
+  )
+  ).
+
+
+
+
 
   % eval_board([[ empty, empty, empty],
   %                    [ empty, empty, empty],
