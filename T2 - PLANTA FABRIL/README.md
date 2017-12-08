@@ -1,3 +1,20 @@
+<table>
+  <tr>
+    <th colspan="4">NEEDS TO BE DONE</th>
+  </tr>
+  <tr>
+    <td colspan="4">performance check</td>
+  </tr>
+  <tr>
+    <td colspan="4">performance experimentation</td>
+  </tr>
+  <tr>
+    <td colspan="4">use much bigger problems</td>
+
+  </tr>
+</table>
+
+
 <strong>17. Planta Fabril</strong>
 <p>
   Numa planta fabril, diferentes tarefas requerem a utilização de diferentes recursos. Por vezes,
