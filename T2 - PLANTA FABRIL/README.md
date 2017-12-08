@@ -12,6 +12,10 @@
     <td colspan="4">use much bigger problems</td>
 
   </tr>
+
+  <tr>
+    <td colspan="4">generate problems</td>
+  </tr>
 </table>
 
 
