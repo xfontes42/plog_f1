@@ -6,7 +6,13 @@
 % Trabalho(id_trabalho, LISTA TAREFAS) -> LISTA TAREFAS [ T1, T2, ...]
 % Tarefa(local_id, duracao, [consomeA, consomeB, ...], [precisa_local_idX, precisa_local_idY, ...])
 
-lista_trabalhos_1([trabalho(1,[tarefa(1, 3, [4,8], []), tarefa(2, 4, [10,20], [1]), tarefa(3, 5, [5,5], [1])])]).
+lista_trabalhos_1([trabalho(1,[tarefa(1, 3, [4,8], []),
+                               tarefa(2, 4, [10,20], [1]),
+                               tarefa(3, 5, [5,5], [1])]),
+                   trabalho(2,[%tarefa(1, 3, [4,8], []),
+                               %tarefa(2, 4, [10,20], [1]),
+                               tarefa(2, 2, [5,5], [])])
+                               ]).
 lista_recursos_1([20,30]).
 
 lista_trabalhos_10 :- fail.
