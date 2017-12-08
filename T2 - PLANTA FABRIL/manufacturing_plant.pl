@@ -127,10 +127,19 @@ manufacture_phase_matrix(_Lista_Trabalhos, _Lista_Recursos):-
 
     % labelling
     append(Start_Vars, End_Vars, Final),
+
+    % LABELING MINIMIZING END TIME
+    maximum(Max_End, End_Vars),
+    % labeling([minimize(Max_End)], Final),
+
+    % LABELING NORMAL
     labeling([], Final),
+
+
     write('here8'), nl,
     write(Start_Vars), nl,
-    write(End_Vars), nl
+    write(End_Vars), nl,
+    write('full process ends at - '), write(Max_End), nl
     .
 
 
