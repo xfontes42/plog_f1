@@ -8,10 +8,10 @@
 
 lista_trabalhos_1([trabalho(1,[tarefa(1, 3, [4,8], []),
                                tarefa(2, 4, [10,20], [1]),
-                               tarefa(3, 5, [5,5], [1])]),
-                   trabalho(2,[tarefa(1, 3, [4,8], []),
+                               tarefa(3, 5, [5,5], [])]),
+                   trabalho(2,[tarefa(1, 3, [4,7], []),
                                tarefa(2, 4, [10,20], [1]),
-                               tarefa(2, 2, [5,5], [])])
+                               tarefa(3, 2, [5,5], [])])
                                ]).
 lista_recursos_1([20,30]).
 
@@ -36,6 +36,25 @@ lista_recursos_1000  :- fail.
 % Ps should be a list of pairs Ti-Tj where Ti and Tj should be task
 % identifiers, denoting that task Ti must complete before task Tj can
 % start.
+
+output_Result([]):-
+  nl,write('End of Tasks'),nl.
+output_Result([Head|Lista_Tarefas]) :-
+  output_Task(Head),
+  output_Result(Lista_Tarefas).
+
+output_Task(task(Oi, _Duracao, Ei, _Recursos, Ti)) :-
+  Trabalho is div(Ti,1000),
+  Task is Ti mod 1000,
+  write('Trabalho: '),
+  write(Trabalho),
+  write('      '),
+  write('Tarefa: '),
+  write(Task),
+  write(' started at '),
+  write(Oi),
+  write(' and ended at '),
+  write(Ei),nl.
 
 parse_duracoes([], []).
 parse_duracoes([task(_,Dur,_,_,_)|Tail], [Dur|Tail2]):-
@@ -145,10 +164,13 @@ manufacture_phase_matrix(_Lista_Trabalhos, _Lista_Recursos):-
     append(Start_Vars, End_Vars, Lista_Tempos_Final),
 
     % LABELING MINIMIZANTE
-    % labeling([minimize(Max_End)], Lista_Tempos_Final),
+    labeling([minimize(Max_End)], Lista_Tempos_Final),
 
     % LABELING NORMAL
-    labeling([], Lista_Tempos_Final),
+    % labeling([], Lista_Tempos_Final),
+
+    nl,
+    output_Result(Lista_Tarefas_Flat),
 
     write('Tempos comeco:'), nl,
     write(Start_Vars), nl,
@@ -179,6 +201,8 @@ manufacture_phase_matrix(_Lista_Trabalhos, _Lista_Recursos):-
 con :- consult('manufacturing_plant.pl').
 
 recon :-  reconsult('manufacturing_plant.pl').
+
+reload :- reconsult('C:/Users/edusw/OneDrive/Documents/GitHub/plog_f1/T2 - PLANTA FABRIL/manufacturing_plant.pl').
 
 clr:- write('\33\[2J').
 
