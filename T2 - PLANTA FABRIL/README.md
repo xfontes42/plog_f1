@@ -27,11 +27,11 @@
   ou mais máquinas.</strong>
 </p>
 <p>
-  <strong>Um trabalho é composto por uma sequência de tarefas com precedências entre si</strong>. Dado um
-  conjunto de trabalhos a executar, e considerando os recursos disponíveis, pretende-se gerar um
-  plano de execução de modo a <strong><i>minimizar o tempo despendido</i></strong>.
+  <strong>Um trabalho é composto por uma sequência de tarefas com precedências entre si</strong>.
+  Dado um conjunto de trabalhos a executar, e considerando os recursos disponíveis, pretende-se
+  gerar um plano de execução de modo a <strong><i>minimizar o tempo despendido</i></strong>.
   Modele este problema como um problema de otimização e resolva-o com PLR, de modo a que
-  seja possível resolver problemas desta classe com diferentes parâmetros, isto é, <strong><i>fazendo variar
-  o número, tipo e competências dos recursos disponíveis, os trabalhos e suas tarefas a executar,</i></strong>
-  etc.
+  seja possível resolver problemas desta classe com diferentes parâmetros, isto é, <strong><i>
+  fazendo variar o número, tipo e competências dos recursos disponíveis, os trabalhos e suas 
+  tarefas a executar,</i></strong> etc.
 </p>

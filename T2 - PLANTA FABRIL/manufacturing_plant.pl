@@ -9,8 +9,8 @@
 lista_trabalhos_1([trabalho(1,[tarefa(1, 3, [4,8], []),
                                tarefa(2, 4, [10,20], [1]),
                                tarefa(3, 5, [5,5], [1])]),
-                   trabalho(2,[%tarefa(1, 3, [4,8], []),
-                               %tarefa(2, 4, [10,20], [1]),
+                   trabalho(2,[tarefa(1, 3, [4,8], []),
+                               tarefa(2, 4, [10,20], [1]),
                                tarefa(2, 2, [5,5], [])])
                                ]).
 lista_recursos_1([20,30]).
@@ -89,57 +89,75 @@ gerador_de_problema(_Lista_Trabalhos, _Lista_Recursos, _Escala_Problema):- fail.
 % TODO: check this out -> lista_trabalhos_1(X), lista_recursos_1(Y), manufacture_phase_matrix(X,Y).
 
 manufacture_phase_matrix(_Lista_Trabalhos, _Lista_Recursos):-
-  %> definir variaveis
-    % parse da lista de trabalhos em tarefas
-    write('here1'), nl,
+
+    write('Lista fornecida:'), nl,
+    write(_Lista_Trabalhos), nl,
+    write('Parsing Trabalhos.'), nl,
     parse_lista_trabalhos(_Lista_Trabalhos, Lista_Tarefas, Lista_Variaveis_Dominio, Lista_Precedencias),
-    write('here2'), nl,
-    append(Lista_Variaveis_Dominio, Lista_Variaveis_Dominio_Flat), % flattend this list
-    get_start_end(Lista_Variaveis_Dominio_Flat, Start_Vars, End_Vars),
-    % domain(Lista_Variaveis_Dominio_Flat, 0, sup), nl,
-    write('here3'), nl,
+
+    % flattening lista variaveis de dominio
+    append(Lista_Variaveis_Dominio, Lista_Variaveis_Dominio_Final), % flattend this list
+
+    write('Variaveis dominio, tempos inicio e fim das tarefas.'), nl,
+    get_start_end(Lista_Variaveis_Dominio_Final, Start_Vars, End_Vars),
+
+    % flattening lista de tarefas
     append(Lista_Tarefas, Lista_Tarefas_Flat),
+
+    write('Lista de tarefas gerada:'), nl,
     write(Lista_Tarefas_Flat), nl,
-    write('here4'), nl,
+    write('Tempos inicio:'), nl,
     write(Start_Vars), nl,
+    write('Tempos fim:'), nl,
     write(End_Vars), nl,
-    write('here5'), nl,
+
+    % flattening lista precedencias
     append(Lista_Precedencias, Lista_Precedencias_Flat),
     append(Lista_Precedencias_Flat, Lista_Precedencias_Flat_Flat),
+
+    write('Lista de precedencias:'), nl,
     write(Lista_Precedencias_Flat_Flat), nl,
-    write('here6'), nl,
+    write('Parsing lista de recursos.'), nl,
     parse_lista_recursos(_Lista_Recursos,Lista_Recursos_Final),
+    write('Lista de recursos:'), nl,
     write(Lista_Recursos_Final), nl,
 
-
+    write('Parsing duracoes.'), nl,
     parse_duracoes(Lista_Tarefas_Flat, Duracoes),
+    write('Duracoes:'), nl,
     write(Duracoes), nl,
+
+    % restrições dos tempos de inicio e fim
     sum(Duracoes, #=, Total_D),
     minimum(Min_D, Duracoes),
     Max_Start #= Total_D - Min_D,
-    % definicao dominio
+    % definicao dominios
     domain(Start_Vars, 0, Max_Start),
     domain(End_Vars, Min_D, Total_D),
 
-    % definicao restricoes
-    % adicionar restriçoes dos dominios com "sum_list"
+    % restricoes com multi_cumulative
     multi_cumulative(Lista_Tarefas_Flat, Lista_Recursos_Final, [precedences(Lista_Precedencias_Flat_Flat)]),
 
-    % labelling
-    append(Start_Vars, End_Vars, Final),
-
-    % LABELING MINIMIZING END TIME
+    % tempo em que terminou a ultima tarefa
     maximum(Max_End, End_Vars),
-    % labeling([minimize(Max_End)], Final),
+
+    % juncao listas
+    append(Start_Vars, End_Vars, Lista_Tempos_Final),
+
+    % LABELING MINIMIZANTE
+    % labeling([minimize(Max_End)], Lista_Tempos_Final),
 
     % LABELING NORMAL
-    labeling([], Final),
+    labeling([], Lista_Tempos_Final),
 
-
-    write('here8'), nl,
+    write('Tempos comeco:'), nl,
     write(Start_Vars), nl,
+    write('Tempos fim:'), nl,
     write(End_Vars), nl,
-    write('full process ends at - '), write(Max_End), nl
+
+    write('Full process ends at - '), write(Max_End), nl,
+    write('Statistics:'), nl,
+    fd_statistics
     .
 
 
@@ -156,3 +174,13 @@ manufacture_phase_matrix(_Lista_Trabalhos, _Lista_Recursos):-
     % minimizar o maximo de tempo final
     % exeprimentar varios metodos de procura
     % experimentar definir o proprio metodo de procura
+
+
+con :- consult('manufacturing_plant.pl').
+
+recon :-  reconsult('manufacturing_plant.pl').
+
+clr:- write('\33\[2J').
+
+
+teste1:- lista_trabalhos_1(X), lista_recursos_1(Y), manufacture_phase_matrix(X,Y).
