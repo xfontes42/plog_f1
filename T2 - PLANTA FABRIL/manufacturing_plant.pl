@@ -128,7 +128,7 @@ gera_tarefa(tarefa(ID_Tarefa, 3, Recursos_T, []), ID_Tarefa, Recursos):-
   gera_recursos(Recursos_T, Recursos)
   .
 
-gera_trabalho(ID_trabalho, trabalho(ID_trabalho, []), 0, Recursos).
+gera_trabalho(ID_trabalho, trabalho(ID_trabalho, []), 0, _Recursos).
 gera_trabalho(ID_trabalho, trabalho(ID_trabalho, [Tarefa|Resto]), NTarefas, Recursos):-
   gera_tarefa(Tarefa, NTarefas, Recursos),
   NTarefas2 is NTarefas -1,
@@ -148,25 +148,25 @@ gerador_de_problema([Trabalho|Resto_Trabalhos], NTrabalhos, NTarefas, Recursos):
 manufacture_phase_matrix(_Lista_Trabalhos, _Lista_Recursos):-
 
     write('Lista fornecida:'), nl,
-    write(_Lista_Trabalhos), nl,
-    write('Parsing Trabalhos.'), nl,
+    write(_Lista_Trabalhos), nl, nl, nl,
+    % write('Parsing Trabalhos.'), nl,
     parse_lista_trabalhos(_Lista_Trabalhos, Lista_Tarefas, Lista_Variaveis_Dominio, Lista_Precedencias),
 
     % flattening lista variaveis de dominio
     append(Lista_Variaveis_Dominio, Lista_Variaveis_Dominio_Final), % flattend this list
 
-    write('Variaveis dominio, tempos inicio e fim das tarefas.'), nl,
+    % write('Variaveis dominio, tempos inicio e fim das tarefas.'), nl,
     get_start_end(Lista_Variaveis_Dominio_Final, Start_Vars, End_Vars),
 
     % flattening lista de tarefas
     append(Lista_Tarefas, Lista_Tarefas_Flat),
 
     write('Lista de tarefas gerada:'), nl,
-    write(Lista_Tarefas_Flat), nl,
-    write('Tempos inicio:'), nl,
-    write(Start_Vars), nl,
-    write('Tempos fim:'), nl,
-    write(End_Vars), nl,
+    write(Lista_Tarefas_Flat), nl, nl, nl,
+    % write('Tempos inicio:'), nl,
+    % write(Start_Vars), nl,
+    % write('Tempos fim:'), nl,
+    % write(End_Vars), nl,
 
     % flattening lista precedencias
     append(Lista_Precedencias, Lista_Precedencias_Flat),
@@ -174,20 +174,20 @@ manufacture_phase_matrix(_Lista_Trabalhos, _Lista_Recursos):-
 
     write('Lista de precedencias:'), nl,
     write(Lista_Precedencias_Flat_Flat), nl,
-    write('Parsing lista de recursos.'), nl,
+    % write('Parsing lista de recursos.'), nl,
     parse_lista_recursos(_Lista_Recursos,Lista_Recursos_Final),
-    write('Lista de recursos:'), nl,
-    write(Lista_Recursos_Final), nl,
+    % write('Lista de recursos:'), nl,
+    % write(Lista_Recursos_Final), nl,
 
-    write('Parsing duracoes.'), nl,
+    % write('Parsing duracoes.'), nl,
     parse_duracoes(Lista_Tarefas_Flat, Duracoes),
-    write('Duracoes:'), nl,
-    write(Duracoes), nl,
+    % write('Duracoes:'), nl,
+    % write(Duracoes), nl,
 
     % restrições dos tempos de inicio e fim
     sum(Duracoes, #=, Total_D),
-    write('Total Duracoes:'), nl,
-    write(Total_D), nl,
+    % write('Total Duracoes:'), nl,
+    % write(Total_D), nl,
     minimum(Min_D, Duracoes),
     Max_Start #= Total_D - Min_D,
     % definicao dominios
@@ -205,8 +205,7 @@ manufacture_phase_matrix(_Lista_Trabalhos, _Lista_Recursos):-
 
     % LABELING MINIMIZANTE
     reset_timer,
-    labeling([minimize(Max_End), bisect, ffc], Lista_Tempos_Final),
-    write(FLAG), nl,
+    labeling([minimize(Max_End), bisect, ffc, time_out(1000, _)], Lista_Tempos_Final),
 
     % LABELING NORMAL
     % labeling([], Lista_Tempos_Final),
@@ -217,8 +216,9 @@ manufacture_phase_matrix(_Lista_Trabalhos, _Lista_Recursos):-
     write('Tempos comeco:'), nl,
     write(Start_Vars), nl,
     write('Tempos fim:'), nl,
-    write(End_Vars), nl,
+    write(End_Vars), nl, nl,
 
+    write('Max possible size is - '), write(Total_D), nl,
     write('Full process ends at - '), write(Max_End), nl, nl,
     write('Statistics:'), nl,
     print_time,
