@@ -126,10 +126,8 @@ gera_recursos([H1|T1], [H2|T2]):-
 
 % gera_precedencias(_, []).
 
-gera_precedencias(1, []):-
-  write('heyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy'), nl.
+gera_precedencias(1, []).
 gera_precedencias(ID, [H1]):-
-  write('heyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy'), nl,
   random(1,ID,H1).
 
 gera_tarefa(tarefa(ID_Tarefa, 3, Recursos_T, Precedencias), ID_Tarefa, Recursos):-
@@ -221,7 +219,7 @@ manufacture_phase_matrix(_Lista_Trabalhos, _Lista_Recursos):-
     % these options occur more than once, the last occurrence overrides previous
     % ones.
 
-    labeling([minimize(Max_End), bisect, ffc, time_out(500, _)], Lista_Tempos_Final),
+    labeling([minimize(Max_End), bisect, ffc, time_out(5000, _)], Lista_Tempos_Final),
 
     print_time,
     % LABELING NORMAL
@@ -274,3 +272,5 @@ teste1:- lista_trabalhos_1(X), lista_recursos_1(Y), manufacture_phase_matrix(X,Y
 teste10:- lista_trabalhos_10(X), lista_recursos_10(Y), manufacture_phase_matrix(X,Y).
 
 teste_gerador:- X=[10,50], gerador_de_problema(L, 2, 10, X),  manufacture_phase_matrix(L,X).
+
+teste_gerador10:- X=[16,48,10], gerador_de_problema(L, 3, 15, X),  manufacture_phase_matrix(L,X).
