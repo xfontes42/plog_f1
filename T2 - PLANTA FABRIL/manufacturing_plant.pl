@@ -204,7 +204,8 @@ manufacture_phase_matrix(_Lista_Trabalhos, _Lista_Recursos):-
     append(Start_Vars, End_Vars, Lista_Tempos_Final),
 
     % LABELING MINIMIZANTE
-    labeling([minimize(Max_End),time_out(20000,FLAG), bisect, ffc], Lista_Tempos_Final),
+    reset_timer,
+    labeling([minimize(Max_End), bisect, ffc], Lista_Tempos_Final),
     write(FLAG), nl,
 
     % LABELING NORMAL
@@ -220,10 +221,14 @@ manufacture_phase_matrix(_Lista_Trabalhos, _Lista_Recursos):-
 
     write('Full process ends at - '), write(Max_End), nl, nl,
     write('Statistics:'), nl,
-    fd_statistics
-    .
+    print_time,
+  	fd_statistics.
 
-
+reset_timer :- statistics(walltime,_).
+print_time :-
+	statistics(walltime,[_,T]),
+	TS is ((T//10)*10)/1000,
+	nl, write('Time: '), write(TS), write('s'), nl, nl.
     % definir lista de todas as tarefas com tempos para imprimir no fim
     % definir limites como pede multi_cumulative
 
