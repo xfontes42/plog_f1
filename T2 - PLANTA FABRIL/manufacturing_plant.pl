@@ -1,5 +1,8 @@
 :-use_module(library(clpfd)).
+:-use_module(library(timeout)).
 :-use_module(library(lists)).
+:-use_module(library(random)).
+
 
 % Lista_Recursos -> LISTA DE RECURSOS [500, 400, ...] , 500 TIPO A, 400 TIPO B, ETC
 % Lista_Trabalhos -> LISTA DE TRABALHOS [W1, W2]
@@ -11,12 +14,24 @@ lista_trabalhos_1([trabalho(1,[tarefa(1, 3, [4,8], []),
                                tarefa(3, 5, [5,5], [])]),
                    trabalho(2,[tarefa(1, 3, [4,7], []),
                                tarefa(2, 4, [10,20], [1]),
-                               tarefa(3, 2, [5,5], [])])
+                               tarefa(3, 2, [5,5], [1])])
                                ]).
 lista_recursos_1([20,30]).
 
-lista_trabalhos_10 :- fail.
-lista_recursos_10  :- fail.
+lista_trabalhos_10([trabalho(2,[tarefa(5,3,[3,5],[]),
+                                tarefa(4,3,[1,43],[]),
+                                tarefa(3,3,[6,19],[]),
+                                tarefa(2,3,[6,37],[]),
+                                tarefa(1,3,[7,3],[])]),
+                    trabalho(1,[tarefa(8,3,[7,34],[]),
+                                tarefa(7,3,[2,44],[]),
+                                tarefa(6,3,[1,1],[]),
+                                tarefa(5,3,[9,3],[]),
+                                tarefa(4,3,[8,7],[]),
+                                tarefa(3,3,[1,13],[]),
+                                tarefa(2,3,[4,36],[]),
+                                tarefa(1,3,[4,48],[])])]).
+lista_recursos_10([10,50]).
 
 lista_trabalhos_100 :- fail.
 lista_recursos_100  :- fail.
@@ -102,7 +117,30 @@ parse_lista_trabalhos([trabalho(ID,Tarefas_Trabalho)|Rest],
   % chama parse_lista_tarefas
   % da append na Lista_Tarefas
 
-gerador_de_problema(_Lista_Trabalhos, _Lista_Recursos, _Escala_Problema):- fail.
+
+gera_recursos([], []).
+gera_recursos([H1|T1], [H2|T2]):-
+  random(1,H2,H1),
+  gera_recursos(T1, T2).
+
+
+gera_tarefa(tarefa(ID_Tarefa, 3, Recursos_T, []), ID_Tarefa, Recursos):-
+  gera_recursos(Recursos_T, Recursos)
+  .
+
+gera_trabalho(ID_trabalho, trabalho(ID_trabalho, []), 0, Recursos).
+gera_trabalho(ID_trabalho, trabalho(ID_trabalho, [Tarefa|Resto]), NTarefas, Recursos):-
+  gera_tarefa(Tarefa, NTarefas, Recursos),
+  NTarefas2 is NTarefas -1,
+  gera_trabalho(ID_trabalho, trabalho(ID_trabalho, Resto), NTarefas2, Recursos).
+
+gerador_de_problema([], 0, _, _).
+gerador_de_problema([Trabalho|Resto_Trabalhos], NTrabalhos, NTarefas, Recursos):-
+  NTarefas_Min is div(NTarefas,10) + 1,
+  random(NTarefas_Min, NTarefas, NTarefas2),
+  gera_trabalho(NTrabalhos, Trabalho, NTarefas2, Recursos),
+  NTrabalhos2 is NTrabalhos - 1,
+  gerador_de_problema(Resto_Trabalhos, NTrabalhos2, NTarefas, Recursos).
   % gerar problemas usando o random
 
 % TODO: check this out -> lista_trabalhos_1(X), lista_recursos_1(Y), manufacture_phase_matrix(X,Y).
@@ -148,6 +186,8 @@ manufacture_phase_matrix(_Lista_Trabalhos, _Lista_Recursos):-
 
     % restrições dos tempos de inicio e fim
     sum(Duracoes, #=, Total_D),
+    write('Total Duracoes:'), nl,
+    write(Total_D), nl,
     minimum(Min_D, Duracoes),
     Max_Start #= Total_D - Min_D,
     % definicao dominios
@@ -164,7 +204,8 @@ manufacture_phase_matrix(_Lista_Trabalhos, _Lista_Recursos):-
     append(Start_Vars, End_Vars, Lista_Tempos_Final),
 
     % LABELING MINIMIZANTE
-    labeling([minimize(Max_End)], Lista_Tempos_Final),
+    labeling([minimize(Max_End),time_out(20000,FLAG), bisect, ffc], Lista_Tempos_Final),
+    write(FLAG), nl,
 
     % LABELING NORMAL
     % labeling([], Lista_Tempos_Final),
@@ -177,7 +218,7 @@ manufacture_phase_matrix(_Lista_Trabalhos, _Lista_Recursos):-
     write('Tempos fim:'), nl,
     write(End_Vars), nl,
 
-    write('Full process ends at - '), write(Max_End), nl,
+    write('Full process ends at - '), write(Max_End), nl, nl,
     write('Statistics:'), nl,
     fd_statistics
     .
@@ -208,3 +249,8 @@ clr:- write('\33\[2J').
 
 
 teste1:- lista_trabalhos_1(X), lista_recursos_1(Y), manufacture_phase_matrix(X,Y).
+
+teste10:- lista_trabalhos_10(X), lista_recursos_10(Y), manufacture_phase_matrix(X,Y).
+
+
+teste_gerador:- X=[10,50], gerador_de_problema(L, 2, 10, X),  manufacture_phase_matrix(L,X).
