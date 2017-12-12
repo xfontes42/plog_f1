@@ -124,9 +124,17 @@ gera_recursos([H1|T1], [H2|T2]):-
   gera_recursos(T1, T2).
 
 
-gera_tarefa(tarefa(ID_Tarefa, 3, Recursos_T, []), ID_Tarefa, Recursos):-
-  gera_recursos(Recursos_T, Recursos)
-  .
+% gera_precedencias(_, []).
+
+gera_precedencias(1, []):-
+  write('heyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy'), nl.
+gera_precedencias(ID, [H1]):-
+  write('heyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy'), nl,
+  random(1,ID,H1).
+
+gera_tarefa(tarefa(ID_Tarefa, 3, Recursos_T, Precedencias), ID_Tarefa, Recursos):-
+  gera_recursos(Recursos_T, Recursos),
+  gera_precedencias(ID_Tarefa, Precedencias).
 
 gera_trabalho(ID_trabalho, trabalho(ID_trabalho, []), 0, _Recursos).
 gera_trabalho(ID_trabalho, trabalho(ID_trabalho, [Tarefa|Resto]), NTarefas, Recursos):-
@@ -264,6 +272,5 @@ clr:- write('\33\[2J').
 teste1:- lista_trabalhos_1(X), lista_recursos_1(Y), manufacture_phase_matrix(X,Y).
 
 teste10:- lista_trabalhos_10(X), lista_recursos_10(Y), manufacture_phase_matrix(X,Y).
-
 
 teste_gerador:- X=[10,50], gerador_de_problema(L, 2, 10, X),  manufacture_phase_matrix(L,X).
