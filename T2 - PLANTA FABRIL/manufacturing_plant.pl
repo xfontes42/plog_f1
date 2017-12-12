@@ -205,8 +205,17 @@ manufacture_phase_matrix(_Lista_Trabalhos, _Lista_Recursos):-
 
     % LABELING MINIMIZANTE
     reset_timer,
-    labeling([minimize(Max_End), bisect, ffc, time_out(1000, _)], Lista_Tempos_Final),
 
+    % We have an optimization problem, seeking an assignment that minimizes
+    % (maximizes)  the  domain  variable X. The  labeling  should constrain X to
+    % become assigned for all assignments of Variables .  It is useful to combine
+    % these option with the time_out/2 , best , and all options (see below).  If
+    % these options occur more than once, the last occurrence overrides previous
+    % ones.
+
+    labeling([minimize(Max_End), bisect, ffc, time_out(500, _)], Lista_Tempos_Final),
+
+    print_time,
     % LABELING NORMAL
     % labeling([], Lista_Tempos_Final),
 
@@ -221,7 +230,6 @@ manufacture_phase_matrix(_Lista_Trabalhos, _Lista_Recursos):-
     write('Max possible size is - '), write(Total_D), nl,
     write('Full process ends at - '), write(Max_End), nl, nl,
     write('Statistics:'), nl,
-    print_time,
   	fd_statistics.
 
 reset_timer :- statistics(walltime,_).
