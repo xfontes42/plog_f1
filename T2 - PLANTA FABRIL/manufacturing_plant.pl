@@ -11,21 +11,22 @@
 
 
 lista_trab_1(
-  [trabalho(1,[tarefa(1, 3, [4,8], []),
-               tarefa(2, 4, [10,20], [1]),
-               tarefa(3, 5, [5,5], [])])]
+  [trabalho(1,[tarefa(1, 3, [2,2,0], []),
+               tarefa(2, 4, [10,20,1], [1]),
+               tarefa(3, 5, [5,5,2], [])])]
 ).
 lista_rec_1(
 [
-  maquinas([10,2,20],[1,0,0]),
-  maquinas([1,20,10],[2,0,0]),
+  maquina(10,[1,0,0]),
+  maquina(20,[2,0,0]),
+  maquina(20,[0,0,0]),
   operadores([10,5,4])
 ]
 ).
 
 lista_trabalhos_1([trabalho(1,[tarefa(1, 3, [4,8], []),
-                               tarefa(2, 4, [10,20], [1]),
-                               tarefa(3, 5, [5,5], [])]),
+                               tarefa(2, 4, [10,20], []),
+                               tarefa(2, 5, [5,5], [])]),
                    trabalho(2,[tarefa(1, 3, [4,7], []),
                                tarefa(2, 4, [10,20], [1]),
                                tarefa(3, 2, [5,5], [1])])
