@@ -18,11 +18,16 @@ lista_trab_1(
 lista_rec_1(
 [
   maquina(10,[1,0,0]),
-  maquina(20,[2,0,0]),
+  maquina(20,[2,0,0])
   maquina(20,[0,0,0]),
   operadores([10,5,4])
 ]
 ).
+
+
+%Para cada tarefa criar uma lista com as possibilidades de a completar
+%tarefa(1, 3, [2,2,0], [])-> task(1001,Si,3,Ef,[1X,1Y,0Z],[])
+%em que sumlist([1X,1Y,0Z],<valor de humanos na máquina>)
 
 lista_trabalhos_1([trabalho(1,[tarefa(1, 3, [4,8], []),
                                tarefa(2, 4, [10,20], []),
