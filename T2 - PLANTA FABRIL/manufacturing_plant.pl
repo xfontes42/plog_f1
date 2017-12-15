@@ -9,6 +9,20 @@
 % Trabalho(id_trabalho, LISTA TAREFAS) -> LISTA TAREFAS [ T1, T2, ...]
 % Tarefa(local_id, duracao, [consomeA, consomeB, ...], [precisa_local_idX, precisa_local_idY, ...])
 
+
+lista_trab_1(
+  [trabalho(1,[tarefa(1, 3, [4,8], []),
+               tarefa(2, 4, [10,20], [1]),
+               tarefa(3, 5, [5,5], [])])]
+).
+lista_rec_1(
+[
+  maquinas([10,2,20],[1,0,0]),
+  maquinas([1,20,10],[2,0,0]),
+  operadores([10,5,4])
+]
+).
+
 lista_trabalhos_1([trabalho(1,[tarefa(1, 3, [4,8], []),
                                tarefa(2, 4, [10,20], [1]),
                                tarefa(3, 5, [5,5], [])]),
@@ -152,7 +166,7 @@ gerador_de_problema([Trabalho|Resto_Trabalhos], NTrabalhos, NTarefas, Recursos):
 % TODO: check this out -> lista_trabalhos_1(X), lista_recursos_1(Y), manufacture_phase_matrix(X,Y).
 
 manufacture_phase_matrix(_Lista_Trabalhos, _Lista_Recursos):-
-
+    reset_timer,
     write('Lista fornecida:'), nl,
     write(_Lista_Trabalhos), nl, nl, nl,
     % write('Parsing Trabalhos.'), nl,
@@ -209,6 +223,8 @@ manufacture_phase_matrix(_Lista_Trabalhos, _Lista_Recursos):-
     % juncao listas
     append(Start_Vars, End_Vars, Lista_Tempos_Final),
 
+    write('Time spent preparing problem:'),
+    print_time,
     % LABELING MINIMIZANTE
     reset_timer,
 
@@ -221,6 +237,7 @@ manufacture_phase_matrix(_Lista_Trabalhos, _Lista_Recursos):-
 
     labeling([minimize(Max_End), bisect, ffc, time_out(5000, _)], Lista_Tempos_Final),
 
+    write('Time spent resolving problem:'),
     print_time,
     % LABELING NORMAL
     % labeling([], Lista_Tempos_Final),
