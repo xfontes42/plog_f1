@@ -222,6 +222,7 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
   get_all_resources_from_tasks(Output_Tarefas_Flat, Tasks_Resources),
   write('R_antes:'), nl, write(Tasks_Resources), nl,
   append(Tasks_Resources, Tasks_Resources_Flat),
+  % FUNCION MINIMIZE DIFFERENCE SQUARES COOL
   labeling([down],Tasks_Resources_Flat), % mudar o down pa ver as merdas a falecer
   write('R_depois:'), nl, write(Tasks_Resources), nl,
 
