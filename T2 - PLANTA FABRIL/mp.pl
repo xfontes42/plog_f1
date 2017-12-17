@@ -14,11 +14,12 @@ teste1_t(
 
           % maquina(QT_RECURSO, OPERADORES_NECESSARIOS, MASQUARA_BINARIA)
 teste1_r([ maquina(10,1,[1,0,0]),
-           maquina(20,2,[1,1,0])
+           maquina(20,2,[1,1,0]),
            maquina(20,0,[0,0,0]) ]).
 
 teste1_o(operadores([10,5,4])).
 
+teste1 :- teste1_t(X), teste1_r(Y), teste1_o(Z), mp(X, Y, Z).
 %---------------------------------------------------------------------------------------------------
 
 
@@ -32,7 +33,7 @@ teste1_o(operadores([10,5,4])).
 
 % parse_recursos(Lista_Input, Lista_Output)
 parse_recursos([],[]).
-parse_recursos([maquina(Recursos, Operadores, Mascara)|Resto_In],
+parse_recursos([maquina(Recursos, _Operadores, _Mascara)|Resto_In],
                [cumulative(Recursos)|Resto_Out]):-
                  parse_recursos(Resto_In, Resto_Out).
 
@@ -48,7 +49,7 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
 
   reset_timer,
   % PARSE AND SHOW OUTPUT TO USE
-  parse_recursos(Input_Recursos, Output_Recursos_Limites).
+  parse_recursos(Input_Recursos, Output_Recursos_Limites),
   write('Output recursos:'), nl, write(Output_Recursos_Limites), nl, nl,
 
 
