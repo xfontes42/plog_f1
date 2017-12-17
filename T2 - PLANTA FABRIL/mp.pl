@@ -22,21 +22,46 @@ teste1_o(operadores([10,5,4])).
 %---------------------------------------------------------------------------------------------------
 
 
-%-------------------------------PARSE_PROBLEMA------------------------------------------------------
-% PREENCHER COM O QUE JÁ TINHAMOS
-%---------------------------------------------------------------------------------------------------
-
-
 %-------------------------------GERADOR_PROBLEMA----------------------------------------------------
 % PREENCHER COM O QUE JÁ TINHAMOS
 %---------------------------------------------------------------------------------------------------
 
 
-%--------------------------------MAIN---------------------------------------------------------------
-mp(Input_Trabalhos, Input_Recursos, Input_Trabalhadores):-
+%-------------------------------PARSE_PROBLEMA------------------------------------------------------
 % PREENCHER COM O QUE JÁ TINHAMOS
-write('Statistics:'), nl,
-fd_statistics.
+
+% parse_recursos(Lista_Input, Lista_Output)
+parse_recursos([],[]).
+parse_recursos([maquina(Recursos, Operadores, Mascara)|Resto_In],
+               [cumulative(Recursos)|Resto_Out]):-
+                 parse_recursos(Resto_In, Resto_Out).
+
+%---------------------------------------------------------------------------------------------------
+
+
+%--------------------------------MAIN---------------------------------------------------------------
+mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
+  % SHOW INPUT TO THE PROBLEM
+  write('Input trabalhos:'), nl, write(Input_Trabalhos), nl, nl,
+  write('Input recursos:'), nl, write(Input_Recursos), nl, nl,
+  write('Input operadores:'), nl, write(Input_Operadores), nl, nl,
+
+  reset_timer,
+  % PARSE AND SHOW OUTPUT TO USE
+  parse_recursos(Input_Recursos, Output_Recursos_Limites).
+  write('Output recursos:'), nl, write(Output_Recursos_Limites), nl, nl,
+
+
+  write('Tempo de preparacao:'), nl, print_time, nl,
+  reset_timer,
+
+  % labeling([minimize(Max_End), bisect, ffc, time_out(5000, _)], Lista_Tempos_Final),
+
+  write('Tempo resolucao:'), nl, print_time, nl,
+
+  % PREENCHER COM O QUE JÁ TINHAMOS
+  write('Statistics:'), nl,
+  fd_statistics.
 
 %---------------------------------------------------------------------------------------------------
 
