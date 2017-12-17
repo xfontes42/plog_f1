@@ -17,7 +17,7 @@ teste1_r([ maquina(10,1,[1,0,0]),
            maquina(20,2,[1,1,0]),
            maquina(20,0,[0,0,0]) ]).
 
-teste1_o([10,5,4]).
+teste1_o([10,3,4]).
 
 teste1 :- teste1_t(X), teste1_r(Y), teste1_o(Z), mp(X, Y, Z).
 %---------------------------------------------------------------------------------------------------
@@ -156,6 +156,13 @@ parse_trabalhos([trabalho(ID,Tarefas_Trabalho)|Rest],
                     Lista_Variaveis_Dominio,
                     Lista_Precedencias,
                     Recursos_Aux).
+
+
+% get_all_resources_from_tasks(Tasks, Resources)
+get_all_resources_from_tasks([], []).
+get_all_resources_from_tasks([task(_, _, _, Resources, _)|Rest_Tasks], [Resources|Rest_Resources]):-
+  get_all_resources_from_tasks(Rest_Tasks, Rest_Resources).
+
 %---------------------------------------------------------------------------------------------------
 
 
@@ -207,6 +214,19 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
   % restricoes com multi_cumulative
   append(Output_Recursos_Limites, Output_Operadores_Limites, Output_Recursos_Final),
   write('Output total recursos limite:'), nl, write(Output_Recursos_Final), nl,
+
+
+
+
+
+  get_all_resources_from_tasks(Output_Tarefas_Flat, Tasks_Resources),
+  write('R_antes:'), nl, write(Tasks_Resources), nl,
+  append(Tasks_Resources, Tasks_Resources_Flat),
+  labeling([down],Tasks_Resources_Flat), % mudar o down pa ver as merdas a falecer
+  write('R_depois:'), nl, write(Tasks_Resources), nl,
+
+
+
   multi_cumulative(Output_Tarefas_Flat, Output_Recursos_Final, [precedences(Output_Precedencias_Flat_Flat)]),
 
   % tempo em que terminou a ultima tarefa
