@@ -229,6 +229,7 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
 
 
 
+
   multi_cumulative(Output_Tarefas_Flat, Output_Recursos_Final, [precedences(Output_Precedencias_Flat_Flat)]),
 
   % tempo em que terminou a ultima tarefa
