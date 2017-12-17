@@ -94,6 +94,7 @@ enforce_binary_mask([Var|Rest], [0|Rest_Mask]):-
 enforce_binary_mask([_Var|Rest], [1|Rest_Mask]):-
   enforce_binary_mask(Rest, Rest_Mask).
 
+
 % output_recursos_operadores_listas(Lista_Recursos, Lista_Rec_Aux, Lista_Operadores)
 output_recursos_operadores_listas([], [], []).
 output_recursos_operadores_listas([0|Rest_Rec], [_Nop-Mask|Rest_Rec_Aux], [Lista_Zeros|Lista_Rec_Operadores]):-
@@ -109,12 +110,18 @@ output_recursos_operadores_listas([_Recurso|Rest_Rec], [Nop-Mask|Rest_Rec_Aux], 
   output_recursos_operadores_listas(Rest_Rec, Rest_Rec_Aux, Lista_Rec_Operadores).
 
 
+% sum_vertical_elements_in_list(Lista_Listas_Rec, Lista_Somas_Verticais)
+sum_vertical_elements_in_list([], []).
+sum_vertical_elements_in_list([Lista|Rest_Lista], [Valor|Rest]):-
+  sum(Lista, #=, Valor),
+  sum_vertical_elements_in_list(Rest_Lista, Rest).
 
 
 % parse_recursos_task(Recursos_Task, Recursos_Operadores, Resultado)
 parse_recursos_task(Recursos, Recurso_Aux, Recursos_Final):-
   output_recursos_operadores_listas(Recursos, Recurso_Aux, Lista_Rec_Operadores),
-  sum_vertical_elements_in_list(Lista_Rec_Operadores, Recursos_Operadores),
+  transpose(Lista_Rec_Operadores, Lista_Transposta),
+  sum_vertical_elements_in_list(Lista_Transposta, Recursos_Operadores),
   append(Recursos, Recursos_Operadores, Recursos_Final).
 
 
