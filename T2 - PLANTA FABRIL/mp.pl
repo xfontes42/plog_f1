@@ -277,6 +277,7 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
                    Output_Recursos_Final,
                    [precedences(Output_Precedencias_Flat_Flat)]),
 
+
   % tempo em que terminou a ultima tarefa
   maximum(Max_End, Output_End_Vars),
 
