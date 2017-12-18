@@ -20,6 +20,49 @@ teste1_r([ maquina(10,1,[1,0,0]),
 teste1_o([10,3,4]).
 
 teste1 :- teste1_t(X), teste1_r(Y), teste1_o(Z), mp(X, Y, Z).
+
+
+teste2_t(
+  %trabalho(ID, LISTA_TAREFAS)
+              %tarefa(ID, DURACAO, LISTA_RECURSOS_A_USAR, PRECEDENCIAS)
+  [trabalho(1,[tarefa(1, 3, [2,2,1,0], []),
+               tarefa(2, 4, [10,20,0,1], [1]),
+               tarefa(3, 5, [5,5,0,2], [])]),
+   trabalho(2, [tarefa(1, 10, [0,0,1,2], []),
+                tarefa(2, 1, [4,8,12,7], [1]),
+                tarefa(3, 3, [3,5,6,2], [])]) % trabalho(3, etc)
+               ]).
+
+          % maquina(QT_RECURSO, OPERADORES_NECESSARIOS, MASQUARA_BINARIA)
+teste2_r([ maquina(10,1,[0,1,0,0]),
+           maquina(20,2,[1,1,0,0]),
+           maquina(15,1,[0,0,0,1]),
+           maquina(20,0,[0,0,0,0]) ]).
+
+teste2_o([3,10,4,20]).
+
+teste2 :- teste2_t(X), teste2_r(Y), teste2_o(Z), mp(X, Y, Z).
+
+teste3_t(
+  %trabalho(ID, LISTA_TAREFAS)
+              %tarefa(ID, DURACAO, LISTA_RECURSOS_A_USAR, PRECEDENCIAS)
+  [trabalho(1,[tarefa(1, 3, [2,2,1,0], []),
+               tarefa(2, 4, [10,20,0,1], [1]),
+               tarefa(3, 5, [5,5,0,2], [])]),
+   trabalho(2, [tarefa(1, 10, [0,0,1,2], []),
+                tarefa(2, 1, [4,8,12,7], [1]),
+                tarefa(3, 3, [3,5,6,2], [])]) % trabalho(3, etc)
+               ]).
+
+          % maquina(QT_RECURSO, OPERADORES_NECESSARIOS, MASQUARA_BINARIA)
+teste3_r([ maquina(10,1,[1,0,0,0]),
+           maquina(20,2,[1,1,0,0]),
+           maquina(15,1,[0,0,0,1]),
+           maquina(20,0,[0,0,0,0]) ]).
+
+teste3_o([10,3,4,20]).
+
+teste3 :- teste3_t(X), teste3_r(Y), teste3_o(Z), mp(X, Y, Z).
 %---------------------------------------------------------------------------------------------------
 
 
