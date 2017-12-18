@@ -163,22 +163,22 @@ sum_vertical_elements_in_list([Lista|Rest_Lista], [Valor|Rest]):-
 
 
 % parse_recursos_task(Recursos_Task, Recursos_Operadores, Resultado)
-parse_recursos_task(Recursos, Recurso_Aux, Recursos_Final):-
+parse_recursos_task(Recursos, Recurso_Aux, Recursos_Operadores):-
   output_recursos_operadores_listas(Recursos, Recurso_Aux, Lista_Rec_Operadores),
   transpose(Lista_Rec_Operadores, Lista_Transposta),
-  sum_vertical_elements_in_list(Lista_Transposta, Recursos_Operadores),
-  append(Recursos, Recursos_Operadores, Recursos_Final).
+  sum_vertical_elements_in_list(Lista_Transposta, Recursos_Operadores).
+  % append(Recursos, Recursos_Operadores, Recursos_Final).
 
 
 % parse_tarefas(ID, Lista_Tarefas, Lista_Tasks, Lista_Vars_Dominio, Lista_Precedencias, Rec_Aux)
 parse_tarefas(_, [], [], [], [], _).
 parse_tarefas(ID, [tarefa(ID_Tarefa, Duracao, Recursos, Precedencias)|Rest],
-                  [task(Oi, Duracao, Ei, Recursos_Total, Ti)|Rest_Task],
+                  [task(Oi, Duracao, Ei, Recursos-Recursos_Operadores, Ti)|Rest_Task],
                   [Oi-Ei|Variaveis_Dominio_Trabalho],
                   [Precedencias_Final|Precedencias_Trabalho],
                   Recurso_Aux):-
   Ti #= ID * 1000 + ID_Tarefa,
-  parse_recursos_task(Recursos, Recurso_Aux, Recursos_Total),
+  parse_recursos_task(Recursos, Recurso_Aux, Recursos_Operadores),
   parse_precedencias(ID, Ti, Precedencias, Precedencias_Final),
   parse_tarefas(ID, Rest, Rest_Task, Variaveis_Dominio_Trabalho, Precedencias_Trabalho, Recurso_Aux).
 
@@ -261,21 +261,45 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
   write('Output total recursos limite:'), nl, write(Output_Recursos_Final), nl,
 
 
+  %-----------------------------------CUMULATIVES WITH MACHINES-------------------------------------
 
 
-  %-----------------------------------IMPROVE MODULE------------------------------------------------
-  get_all_resources_from_tasks(Output_Tarefas_Flat, Tasks_Resources),
-  write('R_antes:'), nl, write(Tasks_Resources), nl,
-  append(Tasks_Resources, Tasks_Resources_Flat),
-  % FUNCION MINIMIZE DIFFERENCE SQUARES COOL
-  labeling([down],Tasks_Resources_Flat), % mudar o down pa ver as merdas a falecer
-  write('R_depois:'), nl, write(Tasks_Resources), nl,
+
+
+
+
+
   %-------------------------------------------------------------------------------------------------
 
 
-  multi_cumulative(Output_Tarefas_Flat,
-                   Output_Recursos_Final,
-                   [precedences(Output_Precedencias_Flat_Flat)]),
+  %-----------------------------------CUMULATIVES WITH OPERATORS------------------------------------
+domain([S,E,S1,E1,M,M1],0,20),
+cumulatives([task(S,3,E,5,M),task(S1,4,E1,5,M1)],[machine(1,9),machine(2,9)],[bound(upper)]),
+labeling([],[S,E,S1,E1,M,M1])
+
+
+
+
+
+  %-------------------------------------------------------------------------------------------------
+
+
+
+  % %-----------------------------------IMPROVE MODULE------------------------------------------------
+  % get_all_resources_from_tasks(Output_Tarefas_Flat, Tasks_Resources),
+  % write('R_antes:'), nl, write(Tasks_Resources), nl,
+  % append(Tasks_Resources, Tasks_Resources_Flat),
+  % % FUNCION MINIMIZE DIFFERENCE SQUARES COOL
+  % labeling([down],Tasks_Resources_Flat), % mudar o down pa ver as merdas a falecer
+  % write('R_depois:'), nl, write(Tasks_Resources), nl,
+  % %-------------------------------------------------------------------------------------------------
+  %
+  %
+  % multi_cumulative(Output_Tarefas_Flat,
+  %                  Output_Recursos_Final,
+  %                  [precedences(Output_Precedencias_Flat_Flat)]),
+
+
 
 
   % tempo em que terminou a ultima tarefa
