@@ -273,12 +273,12 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
 
 
   %-----------------------------------CUMULATIVES WITH OPERATORS------------------------------------
-domain([S,E,S1,E1,M,M1],0,20),
-cumulatives([task(S,3,E,5,M),task(S1,4,E1,5,M1)],[machine(1,9),machine(2,9)],[bound(upper)]),
-labeling([],[S,E,S1,E1,M,M1])
 
 
 
+  domain([S,E,S1,E1,M,M1],0,20),
+  cumulatives([task(S,3,E,5,M),task(S1,4,E1,5,M1)],[machine(1,9),machine(2,9)],[bound(upper)]),
+  labeling([],[S,E,S1,E1,M,M1])
 
 
   %-------------------------------------------------------------------------------------------------
