@@ -97,11 +97,13 @@ enforce_binary_mask([_Var|Rest], [1|Rest_Mask]):-
 
 % output_recursos_operadores_listas(Lista_Recursos, Lista_Rec_Aux, Lista_Operadores)
 output_recursos_operadores_listas([], [], []).
-output_recursos_operadores_listas([0|Rest_Rec], [_Nop-Mask|Rest_Rec_Aux], [Lista_Zeros|Lista_Rec_Operadores]):-
+output_recursos_operadores_listas([0|Rest_Rec], [_Nop-Mask|Rest_Rec_Aux],
+                                                [Lista_Zeros|Lista_Rec_Operadores]):-
   length(Mask, Size_Mask),
   create_list(Size_Mask, 0, Lista_Zeros),
   output_recursos_operadores_listas(Rest_Rec, Rest_Rec_Aux, Lista_Rec_Operadores).
-output_recursos_operadores_listas([_Recurso|Rest_Rec], [Nop-Mask|Rest_Rec_Aux], [Lista_Op|Lista_Rec_Operadores]):-
+output_recursos_operadores_listas([_Recurso|Rest_Rec], [Nop-Mask|Rest_Rec_Aux],
+                                                       [Lista_Op|Lista_Rec_Operadores]):-
   length(Mask, Size_Mask),
   length(Lista_Op, Size_Mask),
   domain(Lista_Op, 0, Nop),
@@ -230,7 +232,9 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
 
 
 
-  multi_cumulative(Output_Tarefas_Flat, Output_Recursos_Final, [precedences(Output_Precedencias_Flat_Flat)]),
+  multi_cumulative(Output_Tarefas_Flat,
+                   Output_Recursos_Final,
+                   [precedences(Output_Precedencias_Flat_Flat)]),
 
   % tempo em que terminou a ultima tarefa
   maximum(Max_End, Output_End_Vars),
