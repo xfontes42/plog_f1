@@ -110,7 +110,7 @@ teste5_r([ maquina(10,1,[1,0,0,0,0]),
            maquina(15,1,[0,0,1,0,1]),
            maquina(20,1,[0,1,0,1,1]),
            maquina(15,3,[1,0,1,0,1]) ]).
-teste5_o([10,3,4,10,5]).
+teste5_o([10,3,4,5,5]).
 teste5 :- teste5_t(X), teste5_r(Y), teste5_o(Z), mp(X, Y, Z).
 %---------------------------------------------------------------------------------------------------
 
@@ -453,11 +453,11 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
   % IR BUSCAR AS OUTRAS VARIAVEIS DE DOMINIO PARA LABELING
   get_all_ops_vars(Output_Tarefas_TEMP, Operators_TEMP),
   append(Operators_TEMP, Lista_Vars_Operadores),
-  append(Lista_Tempos_Final, Lista_Vars_Operadores, Lista_Labeling),
+  append(Lista_Tempos_Final, Lista_Vars_Operadores, Lista_Labeling), !,
   labeling([minimize(Max_End)
     % , bisect
     % , anti_first_fail
-    % , time_out(20000, _)
+    , time_out(20000, _)
     % , min
     , best
     , leftmost
