@@ -418,7 +418,7 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
   parse_tarefas_into_duplicates(Output_Tarefas_TEMP,Output_Tarefas_Final),
   append(Output_Tarefas_Final,Output_Tarefas_Final_Flat),
   parse_operators_into_cumulatives(Input_Operadores,Output_Operators_Parsed,1),
-  cumulatives(Output_Tarefas_Final_Flat,Output_Operators_Parsed,[bound(upper)]),
+  cumulatives(Output_Tarefas_Final_Flat,Output_Operators_Parsed,[bound(upper),generalization(true),task_intervals(true)]),
   %-------------------------------------------------------------------------------------------------
 
   %-------------------------------------MULTI_CUMULATIVE WITH RESOURCES-----------------------------
@@ -444,7 +444,7 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
   labeling([minimize(Max_End)
     , bisect
     , ffc
-    , time_out(10000, _)
+    % , time_out(10000, _)
     ],Lista_Labeling),
 
   write('Tempo resolucao:'), nl, print_time, nl, nl,
