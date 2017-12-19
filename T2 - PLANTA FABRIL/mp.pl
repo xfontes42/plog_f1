@@ -103,11 +103,11 @@ teste5_t(
                 tarefa(5, 3, [0,0,0,7,5], [])]) % trabalho(3, etc)
                ]).
           % maquina(QT_RECURSO, OPERADORES_NECESSARIOS, MASQUARA_BINARIA)
-teste5_r([ maquina(10,1,[1,0,1,0,0]),
+teste5_r([ maquina(10,1,[1,0,0,0,0]),
            maquina(20,2,[1,1,0,0,0]),
-           maquina(15,1,[0,0,0,1,0]),
-           maquina(20,0,[0,0,0,1,0]),
-           maquina(15,3,[1,0,0,1,1]) ]).
+           maquina(15,1,[0,0,1,0,1]),
+           maquina(20,1,[0,1,0,0,1]),
+           maquina(15,3,[1,0,1,0,1]) ]).
 teste5_o([10,3,4,20,5]).
 teste5 :- teste5_t(X), teste5_r(Y), teste5_o(Z), mp(X, Y, Z).
 %---------------------------------------------------------------------------------------------------
@@ -190,7 +190,7 @@ output_Result([Head|Lista_Tarefas]) :-
 
 
 % output_Task(Lista_Tasks)
-output_Task(task(Oi, _Duracao, Ei, _Recursos, Ti)) :-
+output_Task(task(Oi, _Duracao, Ei, Recursos-Operadores, Ti)) :-
  Trabalho is div(Ti,1000),
  Task is Ti mod 1000,
  write('Trabalho: '),
@@ -201,7 +201,11 @@ output_Task(task(Oi, _Duracao, Ei, _Recursos, Ti)) :-
  write(' started at '),
  write(Oi),
  write(' and ended at '),
- write(Ei),nl.
+ write(Ei),
+ write(' rec: '),
+ write(Recursos),
+ write(' ops: '),
+ write(Operadores), nl.
 
 
 % parse_duracoes(Lista_Tasks, Lista_Duracoes)
@@ -336,6 +340,12 @@ duplicate_task(_,_,_,[],_,[]).
 duplicate_task(S,D,E,[Operator|Rest_Operators], Num_Mach, [task(S,D,E,Operator,Num_Mach)|Rest_Res]):-
   Num_Mach2 is Num_Mach + 1,
   duplicate_task(S,D,E,Rest_Operators, Num_Mach2, Rest_Res).
+
+
+% get_all_ops_vars(Lista_Tasks, Lista_Ops)
+get_all_ops_vars([],[]).
+get_all_ops_vars([task(_,_,_,Oper,_)|Rest_Tasks],[Oper|Rest_Res]):-
+  get_all_ops_vars(Rest_Tasks, Rest_Res).
 %---------------------------------------------------------------------------------------------------
 
 
@@ -428,7 +438,12 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
   reset_timer,
 
   % IR BUSCAR AS OUTRAS VARIAVEIS DE DOMINIO PARA LABELING
-  labeling([minimize(Max_End), bisect, ffc, time_out(100000, _)], Lista_Tempos_Final),
+  get_all_ops_vars(Output_Tarefas_TEMP, Operators_TEMP),
+  append(Operators_TEMP, Lista_Vars_Operadores),
+  append(Lista_Tempos_Final, Lista_Vars_Operadores, Lista_Labeling),
+  labeling([minimize(Max_End), bisect, ffc],
+    % time_out(100000, _)],
+    Lista_Labeling),
 
   write('Tempo resolucao:'), nl, print_time, nl, nl,
 
