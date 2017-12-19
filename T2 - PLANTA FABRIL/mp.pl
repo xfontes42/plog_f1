@@ -64,6 +64,7 @@ teste3_o([10,3,4,20]).
 teste3 :- teste3_t(X), teste3_r(Y), teste3_o(Z), mp(X, Y, Z).
 %---------------------------------------------------------------------------------------------------
 
+%------------------------------------TESTE 4--------------------------------------------------------
 teste4_t(
   %trabalho(ID, LISTA_TAREFAS)
               %tarefa(ID, DURACAO, LISTA_RECURSOS_A_USAR, PRECEDENCIAS)
@@ -84,9 +85,83 @@ teste4_o([10,3,4,20]).
 teste4 :- teste4_t(X), teste4_r(Y), teste4_o(Z), mp(X, Y, Z).
 %---------------------------------------------------------------------------------------------------
 
+%------------------------------------TESTE 5--------------------------------------------------------
+teste5_t(
+  %trabalho(ID, LISTA_TAREFAS)
+              %tarefa(ID, DURACAO, LISTA_RECURSOS_A_USAR, PRECEDENCIAS)
+  [trabalho(1,[tarefa(1, 5, [2,2,1,0,10], []),
+               tarefa(2, 5, [10,20,0,1,2], [1]),
+               tarefa(3, 5, [5,5,0,2,0], []),
+               tarefa(4, 5, [2,2,2,2,4], []),
+               tarefa(5, 5, [0,0,0,0,10], [1,2]),
+               tarefa(6, 5, [2,3,0,1,1], [4,2]),
+               tarefa(7, 5, [5,5,0,0,3], [4])]),
+   trabalho(2, [tarefa(1, 10, [0,0,1,2,9], []),
+                tarefa(2, 5, [4,8,12,7,5], [1]),
+                tarefa(3, 3, [3,5,6,2,2], [1]),
+                tarefa(4, 3, [0,2,10,4,5], [2]),
+                tarefa(5, 3, [0,0,0,7,5], [])]) % trabalho(3, etc)
+               ]).
+          % maquina(QT_RECURSO, OPERADORES_NECESSARIOS, MASQUARA_BINARIA)
+teste5_r([ maquina(10,1,[1,0,1,0,0]),
+           maquina(20,2,[1,1,0,0,0]),
+           maquina(15,1,[0,0,0,1,0]),
+           maquina(20,0,[0,0,0,1,0]),
+           maquina(15,3,[1,0,0,1,1]) ]).
+teste5_o([10,3,4,20,5]).
+teste5 :- teste5_t(X), teste5_r(Y), teste5_o(Z), mp(X, Y, Z).
+%---------------------------------------------------------------------------------------------------
+
+
 
 %-------------------------------GERADOR_PROBLEMA----------------------------------------------------
-% PREENCHER COM O QUE JÁ TINHAMOS
+% gera_recursos(Lista, Lista_Resultado)
+gera_recursos([], []).
+gera_recursos([H1|T1], [H2|T2]):-
+  random(1,H2,H1),
+  gera_recursos(T1, T2).
+
+% gera_precedencias(ID, Lista).
+gera_precedencias(1, []).
+gera_precedencias(ID, [H1]):-
+  random(1,ID,H1).
+
+% gera_tarefa(Tarefa, ID, Recursos)
+gera_tarefa(tarefa(ID_Tarefa, 3, Recursos_T, Precedencias), ID_Tarefa, Recursos):-
+  gera_recursos(Recursos_T, Recursos),
+  gera_precedencias(ID_Tarefa, Precedencias).
+
+% gera_trabalho(ID, Trabalho, N_Tarefas, N_Recursos)
+gera_trabalho(ID_trabalho, trabalho(ID_trabalho, []), 0, _Recursos).
+gera_trabalho(ID_trabalho, trabalho(ID_trabalho, [Tarefa|Resto]), NTarefas, Recursos):-
+  gera_tarefa(Tarefa, NTarefas, Recursos),
+  NTarefas2 is NTarefas -1,
+  gera_trabalho(ID_trabalho, trabalho(ID_trabalho, Resto), NTarefas2, Recursos).
+
+% gerador_problema(Lista_Trabalhos, N_Trabalhos, N_Tarefas, Recursos)
+gerador_problema([], 0, _, _).
+gerador_problema([Trabalho|Resto_Trabalhos], NTrabalhos, NTarefas, Recursos):-
+  NTarefas_Min is div(NTarefas,10) + 1,
+  random(NTarefas_Min, NTarefas, NTarefas2),
+  gera_trabalho(NTrabalhos, Trabalho, NTarefas2, Recursos),
+  NTrabalhos2 is NTrabalhos - 1,
+  gerador_problema(Resto_Trabalhos, NTrabalhos2, NTarefas, Recursos).
+
+
+% gera_bit_mask(Tamanho_Mask, Mascara)
+gera_bit_mask(4, [1,1,1,1]).
+
+% gera_maquinas(Lista_Limites, Resultado, Tamanho_Mascara)
+gera_maquinas([],[], _).
+gera_maquinas([Limite|Rest],[maquina(Limite, 2, BitMask )|Rest_Maquinas], Size_Bit_Mask):-
+  gera_bit_mask(Size_Bit_Mask, BitMask),
+  gera_maquinas(Rest, Rest_Maquinas, Size_Bit_Mask).
+
+gera10:- Limites_Recursos = [10,20,30],
+          In_Operadores = [10,3,4,20], length(In_Operadores, Size_Op),
+          gera_maquinas(Limites_Recursos, In_Recursos, Size_Op),
+          gerador_problema(In_Trabalhos, 3, 15, Limites_Recursos),
+          mp(In_Trabalhos, In_Recursos, In_Operadores).
 %---------------------------------------------------------------------------------------------------
 
 
@@ -353,7 +428,7 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
   reset_timer,
 
   % IR BUSCAR AS OUTRAS VARIAVEIS DE DOMINIO PARA LABELING
-  labeling([minimize(Max_End), bisect, ffc, time_out(10000, _)], Lista_Tempos_Final),
+  labeling([minimize(Max_End), bisect, ffc, time_out(100000, _)], Lista_Tempos_Final),
 
   write('Tempo resolucao:'), nl, print_time, nl, nl,
 
