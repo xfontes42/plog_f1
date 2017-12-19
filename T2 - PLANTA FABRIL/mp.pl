@@ -441,9 +441,11 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
   get_all_ops_vars(Output_Tarefas_TEMP, Operators_TEMP),
   append(Operators_TEMP, Lista_Vars_Operadores),
   append(Lista_Tempos_Final, Lista_Vars_Operadores, Lista_Labeling),
-  labeling([minimize(Max_End), bisect, ffc],
-    % time_out(100000, _)],
-    Lista_Labeling),
+  labeling([minimize(Max_End)
+    , bisect
+    , ffc
+    , time_out(10000, _)
+    ],Lista_Labeling),
 
   write('Tempo resolucao:'), nl, print_time, nl, nl,
 
