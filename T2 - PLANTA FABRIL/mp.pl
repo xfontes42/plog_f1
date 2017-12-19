@@ -363,17 +363,17 @@ get_all_ops_vars([task(_,_,_,Oper,_)|Rest_Tasks],[Oper|Rest_Res]):-
 %--------------------------------MAIN---------------------------------------------------------------
 mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
   % SHOW INPUT TO THE PROBLEM
-  write('Input trabalhos:'), nl, write(Input_Trabalhos), nl, nl,
-  write('Input recursos:'), nl, write(Input_Recursos), nl, nl,
-  write('Input operadores:'), nl, write(Input_Operadores), nl, nl,
+  % write('Input trabalhos:'), nl, write(Input_Trabalhos), nl, nl,
+  % write('Input recursos:'), nl, write(Input_Recursos), nl, nl,
+  % write('Input operadores:'), nl, write(Input_Operadores), nl, nl,
 
   reset_timer,
   % PARSE AND SHOW OUTPUT TO USE
   parse_recursos_operador(Input_Operadores, Output_Operadores_Limites),
-  write('Output operadores:'), nl, write(Output_Operadores_Limites), nl, nl,
+  % write('Output operadores:'), nl, write(Output_Operadores_Limites), nl, nl,
   parse_recursos_maquina(Input_Recursos, Output_Recursos_Limites, Recursos_Aux),
-  write('Output recursos:'), nl, write(Output_Recursos_Limites), nl, nl,
-  write('Output recursos aux:'), nl, write(Recursos_Aux), nl, nl,
+  % write('Output recursos:'), nl, write(Output_Recursos_Limites), nl, nl,
+  % write('Output recursos aux:'), nl, write(Recursos_Aux), nl, nl,
   parse_trabalhos(Input_Trabalhos,
                   Output_Tarefas,
                   Output_Variaveis_Dominio,
@@ -384,20 +384,20 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
   get_start_end(Output_Variaveis_Dominio_Final, Output_Start_Vars, Output_End_Vars),
   append(Output_Tarefas, Output_Tarefas_Flat), % flattend this list
 
-  write('Output tarefas geradas:'), nl, write(Output_Tarefas_Flat), nl,
-  write('Output variaveis dominio:'), nl, write(Output_Variaveis_Dominio), nl,
-  write('Output inicios:'), nl, write(Output_Start_Vars), nl,
-  write('Output fim:'), nl, write(Output_End_Vars), nl,
+  % write('Output tarefas geradas:'), nl, write(Output_Tarefas_Flat), nl,
+  % write('Output variaveis dominio:'), nl, write(Output_Variaveis_Dominio), nl,
+  % write('Output inicios:'), nl, write(Output_Start_Vars), nl,
+  % write('Output fim:'), nl, write(Output_End_Vars), nl,
 
   append(Output_Precedencias, Output_Precedencias_Flat),
   append(Output_Precedencias_Flat, Output_Precedencias_Flat_Flat),
-  write('Output precedencias:'), nl, write(Output_Precedencias_Flat_Flat), nl,
+  % write('Output precedencias:'), nl, write(Output_Precedencias_Flat_Flat), nl,
   parse_duracoes(Output_Tarefas_Flat, Output_Duracoes),
-  write('Output duracoes:'), nl, write(Output_Duracoes), nl,
+  % write('Output duracoes:'), nl, write(Output_Duracoes), nl,
 
   % restrições dos tempos de inicio e fim
   sum(Output_Duracoes, #=, Total_Durations),
-  write('Output total duracao:'), nl, write(Total_Durations), nl,
+  % write('Output total duracao:'), nl, write(Total_Durations), nl,
 
   minimum(Min_Duration, Output_Duracoes),
   Max_Start #= Total_Durations - Min_Duration,
@@ -405,9 +405,8 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
   domain(Output_Start_Vars, 0, Max_Start),
   domain(Output_End_Vars, Min_Duration, Total_Durations),
 
-  % restricoes com multi_cumulative
-  append(Output_Recursos_Limites, Output_Operadores_Limites, Output_Recursos_Final),
-  write('Output total recursos limite:'), nl, write(Output_Recursos_Final), nl, !,
+  %append(Output_Recursos_Limites, Output_Operadores_Limites, Output_Recursos_Final),
+  % write('Output total recursos limite:'), nl, write(Output_Recursos_Final), nl, !,
 
   %-----------------------------------TEST FOR CUMULATIVES------------------------------------
   % domain([S,E,S1,E1,M,M1],0,20),
@@ -448,7 +447,7 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
   % juncao listas
   append(Output_Start_Vars, Output_End_Vars, Lista_Tempos_Final),
 
-  write('Tempo de preparacao:'), nl, print_time, nl,
+  nl, write('Tempo de preparacao:'), nl, print_time,
   reset_timer,
 
   % IR BUSCAR AS OUTRAS VARIAVEIS DE DOMINIO PARA LABELING
@@ -469,7 +468,7 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
     % , restart
     ],Lista_Labeling),
 
-  write('Tempo resolucao:'), nl, print_time, nl, nl,
+  write('Tempo resolucao:'), nl, print_time, nl,
 
   output_Result(Output_Tarefas_Flat),
 
