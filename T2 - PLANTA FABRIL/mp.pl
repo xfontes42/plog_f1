@@ -208,6 +208,40 @@ get_all_resources_from_tasks([], []).
 get_all_resources_from_tasks([task(_, _, _, Resources, _)|Rest_Tasks], [Resources|Rest_Resources]):-
   get_all_resources_from_tasks(Rest_Tasks, Rest_Resources).
 
+
+% parse_tarefas_into_multi(Lista_Tasks, Lista_Tasks_Multi)
+parse_tarefas_into_multi([],[]).
+parse_tarefas_into_multi([task(S,D,E,Rec-_Oper,Ti)|Rest_Task], [task(S,D,E,Rec,Ti)|Rest_Multi]):-
+  parse_tarefas_into_multi(Rest_Task, Rest_Multi).
+
+
+% parse_tarefas_into_operators(Lista_Tasks, Lista_Tasks_Oper)
+parse_tarefas_into_operators([],[]).
+parse_tarefas_into_operators([task(S,D,E,_Rec-Oper,Ti)|Rest_Task], [task(S,D,E,Oper,Ti)|Rest_Multi]):-
+  parse_tarefas_into_operators(Rest_Task, Rest_Multi).
+
+
+%  parse_maquinas_into_cumulatives(Input_Recursos,Output_Maquinas_Parsed,Num),
+parse_maquinas_into_cumulatives([],[],_).
+parse_maquinas_into_cumulatives([maquina(Limit,_,_)|Rest_Maquinas],
+                                [machine(Num,Limit)|Rest_Machines],Num):-
+    Num2 is Num + 1,
+    parse_maquinas_into_cumulatives(Rest_Maquinas, Rest_Machines, Num2).
+
+
+% parse_tarefas_into_duplicates(Output_Tarefas_TEMP,Output_Tarefas_Final)
+parse_tarefas_into_duplicates([], []).
+parse_tarefas_into_duplicates([task(S,D,E,Operators,_TID)|Rest_Task],
+                              [Current_Set|Rest_Dups]):-
+    duplicate_task(S,D,E,Operators,1,Current_Set),
+    parse_tarefas_into_duplicates(Rest_Task, Rest_Dups).
+
+
+% duplicate_task(Start, Dur, End, Lista_Operators, NumMaquina, Result)
+duplicate_task(_,_,_,[],_,[]).
+duplicate_task(S,D,E,[Operator|Rest_Operators], Num_Mach, [task(S,D,E,Operator,Num_Mach)|Rest_Res]):-
+  Num_Mach2 is Num_Mach + 1,
+  duplicate_task(S,D,E,Rest_Operators, Num_Mach2, Rest_Res).
 %---------------------------------------------------------------------------------------------------
 
 
@@ -260,32 +294,13 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
   append(Output_Recursos_Limites, Output_Operadores_Limites, Output_Recursos_Final),
   write('Output total recursos limite:'), nl, write(Output_Recursos_Final), nl,
 
-
-  %-----------------------------------CUMULATIVES WITH MACHINES-------------------------------------
-
-
-
-
-
-
-
+  %-----------------------------------TEST FOR CUMULATIVES------------------------------------
+  % domain([S,E,S1,E1,M,M1],0,20),
+  % cumulatives([task(S,3,E,5,M),task(S1,4,E1,5,M1)],[machine(1,9),machine(2,9)],[bound(upper)]),
+  % labeling([],[S,E,S1,E1,M,M1])
   %-------------------------------------------------------------------------------------------------
 
-
-  %-----------------------------------CUMULATIVES WITH OPERATORS------------------------------------
-
-
-
-  domain([S,E,S1,E1,M,M1],0,20),
-  cumulatives([task(S,3,E,5,M),task(S1,4,E1,5,M1)],[machine(1,9),machine(2,9)],[bound(upper)]),
-  labeling([],[S,E,S1,E1,M,M1])
-
-
-  %-------------------------------------------------------------------------------------------------
-
-
-
-  % %-----------------------------------IMPROVE MODULE------------------------------------------------
+  % %-----------------------------------OLD MODULE------------------------------------------------
   % get_all_resources_from_tasks(Output_Tarefas_Flat, Tasks_Resources),
   % write('R_antes:'), nl, write(Tasks_Resources), nl,
   % append(Tasks_Resources, Tasks_Resources_Flat),
@@ -293,14 +308,21 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
   % labeling([down],Tasks_Resources_Flat), % mudar o down pa ver as merdas a falecer
   % write('R_depois:'), nl, write(Tasks_Resources), nl,
   % %-------------------------------------------------------------------------------------------------
-  %
-  %
-  % multi_cumulative(Output_Tarefas_Flat,
-  %                  Output_Recursos_Final,
-  %                  [precedences(Output_Precedencias_Flat_Flat)]),
 
+  %-------------------------------------CUMULATIVE WITH OPERATORS-----------------------------------
+  parse_tarefas_into_operators(Output_Tarefas_Flat, Output_Tarefas_TEMP),
+  parse_tarefas_into_duplicates(Output_Tarefas_TEMP,Output_Tarefas_Final),
+  append(Output_Tarefas_Final,Output_Tarefas_Final_Flat),
+  parse_maquinas_into_cumulatives(Input_Recursos,Output_Maquinas_Parsed,1),
+  cumulatives(Output_Tarefas_Final_Flat,Output_Maquinas_Parsed,[bound(upper)]),
+  %-------------------------------------------------------------------------------------------------
 
-
+  %-------------------------------------MULTI_CUMULATIVE WITH RESOURCES-----------------------------
+  parse_tarefas_into_multi(Output_Tarefas_Flat, Output_Tarefas_Multi),
+  multi_cumulative(Output_Tarefas_Multi,
+                   Output_Recursos_Limites,
+                   [precedences(Output_Precedencias_Flat_Flat)]),
+  %-------------------------------------------------------------------------------------------------
 
   % tempo em que terminou a ultima tarefa
   maximum(Max_End, Output_End_Vars),
@@ -311,7 +333,8 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
   write('Tempo de preparacao:'), nl, print_time, nl,
   reset_timer,
 
-  labeling([minimize(Max_End), bisect, ffc, time_out(5000, _)], Lista_Tempos_Final),
+  % IR BUSCAR AS OUTRAS VARIAVEIS DE DOMINIO PARA LABELING
+  labeling([minimize(Max_End), bisect, ffc, time_out(10000, _)], Lista_Tempos_Final),
 
   write('Tempo resolucao:'), nl, print_time, nl, nl,
 
