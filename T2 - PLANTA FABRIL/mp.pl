@@ -4,6 +4,8 @@
 :-use_module(library(random)).
 
 %----------------------------TESTES-----------------------------------------------------------------
+
+%----------------------------TESTE 1----------------------------------------------------------------
 teste1_t(
   %trabalho(ID, LISTA_TAREFAS)
               %tarefa(ID, DURACAO, LISTA_RECURSOS_A_USAR, PRECEDENCIAS)
@@ -16,12 +18,11 @@ teste1_t(
 teste1_r([ maquina(10,1,[1,0,0]),
            maquina(20,2,[1,1,0]),
            maquina(20,0,[0,0,0]) ]).
-
 teste1_o([10,3,4]).
-
 teste1 :- teste1_t(X), teste1_r(Y), teste1_o(Z), mp(X, Y, Z).
+%---------------------------------------------------------------------------------------------------
 
-
+%---------------------------------------TESTE 2-----------------------------------------------------
 teste2_t(
   %trabalho(ID, LISTA_TAREFAS)
               %tarefa(ID, DURACAO, LISTA_RECURSOS_A_USAR, PRECEDENCIAS)
@@ -38,11 +39,11 @@ teste2_r([ maquina(10,1,[0,1,0,0]),
            maquina(20,2,[1,1,0,0]),
            maquina(15,1,[0,0,0,1]),
            maquina(20,0,[0,0,0,0]) ]).
-
 teste2_o([3,10,4,20]).
-
 teste2 :- teste2_t(X), teste2_r(Y), teste2_o(Z), mp(X, Y, Z).
+%---------------------------------------------------------------------------------------------------
 
+%------------------------------------TESTE 3--------------------------------------------------------
 teste3_t(
   %trabalho(ID, LISTA_TAREFAS)
               %tarefa(ID, DURACAO, LISTA_RECURSOS_A_USAR, PRECEDENCIAS)
@@ -59,10 +60,28 @@ teste3_r([ maquina(10,1,[1,0,0,0]),
            maquina(20,2,[1,1,0,0]),
            maquina(15,1,[0,0,0,1]),
            maquina(20,0,[0,0,0,0]) ]).
-
 teste3_o([10,3,4,20]).
-
 teste3 :- teste3_t(X), teste3_r(Y), teste3_o(Z), mp(X, Y, Z).
+%---------------------------------------------------------------------------------------------------
+
+teste4_t(
+  %trabalho(ID, LISTA_TAREFAS)
+              %tarefa(ID, DURACAO, LISTA_RECURSOS_A_USAR, PRECEDENCIAS)
+  [trabalho(1,[tarefa(1, 3, [2,2,1,0,10], []),
+               tarefa(2, 4, [10,20,0,1,2], [1]),
+               tarefa(3, 5, [5,5,0,2,0], [])]),
+   trabalho(2, [tarefa(1, 10, [0,0,1,2,9], []),
+                tarefa(2, 1, [4,8,12,7,5], [1]),
+                tarefa(3, 3, [3,5,6,2,2], [1])]) % trabalho(3, etc)
+               ]).
+          % maquina(QT_RECURSO, OPERADORES_NECESSARIOS, MASQUARA_BINARIA)
+teste4_r([ maquina(10,1,[1,0,0,0]),
+           maquina(20,2,[1,1,0,0]),
+           maquina(15,1,[0,0,0,1]),
+           maquina(20,0,[0,0,0,0]),
+           maquina(15,3,[1,0,0,1]) ]).
+teste4_o([10,3,4,20]).
+teste4 :- teste4_t(X), teste4_r(Y), teste4_o(Z), mp(X, Y, Z).
 %---------------------------------------------------------------------------------------------------
 
 
@@ -222,11 +241,11 @@ parse_tarefas_into_operators([task(S,D,E,_Rec-Oper,Ti)|Rest_Task], [task(S,D,E,O
 
 
 %  parse_maquinas_into_cumulatives(Input_Recursos,Output_Maquinas_Parsed,Num),
-parse_maquinas_into_cumulatives([],[],_).
-parse_maquinas_into_cumulatives([maquina(Limit,_,_)|Rest_Maquinas],
-                                [machine(Num,Limit)|Rest_Machines],Num):-
+parse_operators_into_cumulatives([],[],_).
+parse_operators_into_cumulatives([Limit_Op|Rest_Operators],
+                                [machine(Num,Limit_Op)|Rest_Parsed_Opers],Num):-
     Num2 is Num + 1,
-    parse_maquinas_into_cumulatives(Rest_Maquinas, Rest_Machines, Num2).
+    parse_operators_into_cumulatives(Rest_Operators, Rest_Parsed_Opers, Num2).
 
 
 % parse_tarefas_into_duplicates(Output_Tarefas_TEMP,Output_Tarefas_Final)
@@ -313,8 +332,8 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
   parse_tarefas_into_operators(Output_Tarefas_Flat, Output_Tarefas_TEMP),
   parse_tarefas_into_duplicates(Output_Tarefas_TEMP,Output_Tarefas_Final),
   append(Output_Tarefas_Final,Output_Tarefas_Final_Flat),
-  parse_maquinas_into_cumulatives(Input_Recursos,Output_Maquinas_Parsed,1),
-  cumulatives(Output_Tarefas_Final_Flat,Output_Maquinas_Parsed,[bound(upper)]),
+  parse_operators_into_cumulatives(Input_Operadores,Output_Operators_Parsed,1),
+  cumulatives(Output_Tarefas_Final_Flat,Output_Operators_Parsed,[bound(upper)]),
   %-------------------------------------------------------------------------------------------------
 
   %-------------------------------------MULTI_CUMULATIVE WITH RESOURCES-----------------------------
