@@ -100,15 +100,17 @@ teste5_t(
                 tarefa(2, 5, [4,8,12,7,5], [1]),
                 tarefa(3, 3, [3,5,6,2,2], [1]),
                 tarefa(4, 3, [0,2,10,4,5], [2]),
-                tarefa(5, 3, [0,0,0,7,5], [])]) % trabalho(3, etc)
+                tarefa(5, 3, [0,12,4,0,0], [1]),
+                tarefa(6, 3, [0,1,1,1,1], [1]),
+                tarefa(7, 3, [0,0,0,0,5], [])]) % trabalho(3, etc)
                ]).
           % maquina(QT_RECURSO, OPERADORES_NECESSARIOS, MASQUARA_BINARIA)
 teste5_r([ maquina(10,1,[1,0,0,0,0]),
            maquina(20,2,[1,1,0,0,0]),
            maquina(15,1,[0,0,1,0,1]),
-           maquina(20,1,[0,1,0,0,1]),
+           maquina(20,1,[0,1,0,1,1]),
            maquina(15,3,[1,0,1,0,1]) ]).
-teste5_o([10,3,4,20,5]).
+teste5_o([10,3,4,10,5]).
 teste5 :- teste5_t(X), teste5_r(Y), teste5_o(Z), mp(X, Y, Z).
 %---------------------------------------------------------------------------------------------------
 
@@ -188,6 +190,14 @@ output_Result([Head|Lista_Tarefas]) :-
  output_Task(Head),
  output_Result(Lista_Tarefas).
 
+write_formated_by_us([]).
+write_formated_by_us([ELEM]):-
+  format('~|~t~d~4+', [ELEM]),
+  write(' ]').
+write_formated_by_us([ELEM|Rest]):-
+  format('~|~t~d~4+', [ELEM]),
+  write(','),
+  write_formated_by_us(Rest).
 
 % output_Task(Lista_Tasks)
 output_Task(task(Oi, _Duracao, Ei, Recursos-Operadores, Ti)) :-
@@ -199,13 +209,14 @@ output_Task(task(Oi, _Duracao, Ei, Recursos-Operadores, Ti)) :-
  write('Tarefa: '),
  write(Task),
  write(' started at '),
- write(Oi),
- write(' and ended at '),
- write(Ei),
+ % write(Oi),
+ format('~|~t~d~4+ ~w ~|~t~d~4+', [Oi, ' and ended at ', Ei]),
+ % write(' and ended at '),
+ % write(Ei),
  write(' rec: '),
- write(Recursos),
+ write('['), write_formated_by_us(Recursos),
  write(' ops: '),
- write(Operadores), nl.
+ write('['), write_formated_by_us(Operadores), nl.
 
 
 % parse_duracoes(Lista_Tasks, Lista_Duracoes)
@@ -396,7 +407,7 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
 
   % restricoes com multi_cumulative
   append(Output_Recursos_Limites, Output_Operadores_Limites, Output_Recursos_Final),
-  write('Output total recursos limite:'), nl, write(Output_Recursos_Final), nl,
+  write('Output total recursos limite:'), nl, write(Output_Recursos_Final), nl, !,
 
   %-----------------------------------TEST FOR CUMULATIVES------------------------------------
   % domain([S,E,S1,E1,M,M1],0,20),
@@ -418,7 +429,10 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
   parse_tarefas_into_duplicates(Output_Tarefas_TEMP,Output_Tarefas_Final),
   append(Output_Tarefas_Final,Output_Tarefas_Final_Flat),
   parse_operators_into_cumulatives(Input_Operadores,Output_Operators_Parsed,1),
-  cumulatives(Output_Tarefas_Final_Flat,Output_Operators_Parsed,[bound(upper),generalization(true),task_intervals(true)]),
+  cumulatives(Output_Tarefas_Final_Flat,Output_Operators_Parsed,
+      [bound(upper),
+       generalization(true),
+       task_intervals(true)]),
   %-------------------------------------------------------------------------------------------------
 
   %-------------------------------------MULTI_CUMULATIVE WITH RESOURCES-----------------------------
@@ -442,9 +456,17 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
   append(Operators_TEMP, Lista_Vars_Operadores),
   append(Lista_Tempos_Final, Lista_Vars_Operadores, Lista_Labeling),
   labeling([minimize(Max_End)
-    , bisect
-    , ffc
-    % , time_out(10000, _)
+    % , bisect
+    % , anti_first_fail
+    % , time_out(20000, _)
+    % , min
+    , best
+    , leftmost
+    , step
+    % , down
+    , up
+    , bab  % (this is the default, but is better with the one below)
+    % , restart
     ],Lista_Labeling),
 
   write('Tempo resolucao:'), nl, print_time, nl, nl,
