@@ -116,7 +116,7 @@ teste5_o([10,10,10,10]).
 t5 :- teste5_t(X), teste5_r(Y), teste5_o(Z), mp(X, Y, Z).
 %-------------------------------------------------------------------------------
 
-%TESTE 5------------------------------------------------------------------------
+%TESTE 6------------------------------------------------------------------------
 teste6_t(
   %trabalho(ID, LISTA_TAREFAS)
               %tarefa(ID, DURACAO, LISTA_RECURSOS_A_USAR, PRECEDENCIAS)
@@ -163,6 +163,44 @@ teste6_o([10,10,10,10,20,30]).
 t6 :- teste6_t(X), teste6_r(Y), teste6_o(Z), mp(X, Y, Z).
 %-------------------------------------------------------------------------------
 
+
+%TESTE 7------------------------------------------------------------------------
+teste7_t(
+  %trabalho(ID, LISTA_TAREFAS)
+              %tarefa(ID, DURACAO, LISTA_RECURSOS_A_USAR, PRECEDENCIAS)
+ [ trabalho(1,[tarefa(1, 5, [2,2,1,0,10], []),
+               tarefa(2, 4, [10,20,0,1,2], [1]),
+               tarefa(3, 3, [5,5,0,2,0], []),
+               tarefa(4, 4, [2,2,2,2,4], []),
+               tarefa(5, 6, [3,4,0,0,10], [4]),
+               tarefa(6, 7, [2,3,0,1,1], [2]),
+               tarefa(7, 1, [10,20,0,1,2], []),
+               tarefa(17, 4, [5,5,0,0,3], [])
+               ]),
+   trabalho(2, [tarefa(1, 10, [0,0,1,2,9], []),
+                tarefa(2, 5, [4,8,12,7,5], [1]),
+                tarefa(3, 7, [3,5,6,2,2], [1]),
+                tarefa(4, 3, [1,2,10,4,5], []),
+                tarefa(5, 3, [0,1,7,7,7], []),
+                tarefa(6, 7, [1,2,1,1,7], [1,2,3]),
+                tarefa(7, 5, [4,8,12,7,5], [2,4]),
+                tarefa(8, 2, [3,5,6,2,2], [4]),
+                tarefa(9, 3, [0,2,10,4,5], []),
+                tarefa(10, 3, [10,1,1,3,1], []),
+                tarefa(11, 7, [0,10,1,1,1], [1]),
+                tarefa(12, 3, [5,0,14,0,5], []),
+                tarefa(13, 3, [0,10,1,1,1], [1])
+                ])
+               ]).
+          % maquina(QT_RECURSO, OPERADORES_NECESSARIOS, MASQUARA_BINARIA)
+teste7_r([ maquina(10,1,[1,0,0,0,1,0]),
+           maquina(20,2,[1,1,0,1,0,0]), % maquina(20,2,[1,0,0,0]) ja da
+           maquina(15,1,[0,1,0,0,1,1]),
+           maquina(20,1,[0,1,0,1,0,0]),
+           maquina(15,3,[1,0,1,1,0,1]) ]). % maquina(15,3,[0,0,1,1]) ja da tbm
+teste7_o([10,10,10,10,20,30]).
+t7 :- teste7_t(X), teste7_r(Y), teste7_o(Z), mp(X, Y, Z).
+%-------------------------------------------------------------------------------
 
 % length(Lista_Op, 5),
 % domain(Lista_Op, 0, 3),
@@ -533,7 +571,7 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
   labeling([minimize(Max_End)
     % , bisect
     % , anti_first_fail
-    , time_out(20000, _)
+    % , time_out(20000, _)
     % , min
     , best      %(default)
     , leftmost  %(default)
