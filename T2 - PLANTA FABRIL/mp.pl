@@ -571,20 +571,23 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
   labeling([minimize(Max_End)
     % , bisect
     % , anti_first_fail
-    % , time_out(20000, _)
+    % , ffc
+    % , occurrence
+    % , time_out(60000, _)
     % , min
-    , best      %(default)
-    , leftmost  %(default)
-    , step      %(default)
+    % , best      %(default)
+    % , leftmost  %(default)
+    % , step      %(default)
     % , down
-    , up        %(default)
-    , bab       %(default)
-    % , restart
+    % , up        %(default)
+    % , bab       %(default)
+    , restart
+    % , max_regret
     ],Lista_Labeling),
 
   write('Tempo resolucao:'), nl, print_time, nl,
 
-  output_Result(Output_Tarefas_Flat),
+  % output_Result(Output_Tarefas_Flat),
 
   write('Max possible size is - '), write(Total_Durations), nl,
   write('Full process ends at - '), write(Max_End), nl, nl,
