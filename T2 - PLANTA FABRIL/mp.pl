@@ -89,30 +89,30 @@ teste4 :- teste4_t(X), teste4_r(Y), teste4_o(Z), mp(X, Y, Z).
 teste5_t(
   %trabalho(ID, LISTA_TAREFAS)
               %tarefa(ID, DURACAO, LISTA_RECURSOS_A_USAR, PRECEDENCIAS)
- [ %trabalho(1,[tarefa(1, 5, [2,2,1,0,10], []),
-  %              tarefa(2, 5, [10,20,0,1,2], [1]),
-  %              tarefa(3, 5, [5,5,0,2,0], []),
-  %              tarefa(4, 5, [2,2,2,2,4], []),
-  %              tarefa(5, 5, [0,0,0,0,10], [1]),
-  %              tarefa(6, 5, [2,3,0,1,1], [4,2]),
-  %              tarefa(7, 5, [5,5,0,0,3], [4])
-  %              ]),
-   trabalho(2, [%tarefa(1, 10, [0,0,1,2,9], []),
+ [ trabalho(1,[tarefa(1, 5, [2,2,1,0,10], []),
+               tarefa(2, 5, [10,20,0,1,2], [1]),
+               tarefa(3, 5, [5,5,0,2,0], []),
+               % tarefa(4, 5, [2,2,2,2,4], []),
+               tarefa(5, 5, [0,0,0,0,10], [1]),
+               tarefa(6, 5, [2,3,0,1,1], [2]),
+               tarefa(7, 5, [5,5,0,0,3], [])
+               ]),
+   trabalho(2, [tarefa(1, 10, [0,0,1,2,9], []),
                 % tarefa(2, 5, [4,8,12,7,5], [1]),
                 % tarefa(3, 3, [3,5,6,2,2], [1]),
-                % tarefa(4, 3, [0,2,10,4,5], [2]),
-                tarefa(5, 3, [1,1,1,1,1], [])
-                % tarefa(6, 3, [0,1,1,1,1], [1]),
-                % tarefa(7, 3, [0,0,0,0,5], [])
+                tarefa(4, 3, [0,2,10,4,5], []),
+                tarefa(5, 3, [0,1,1,1,1], []),
+                tarefa(6, 3, [0,1,1,1,1], [1]),
+                tarefa(7, 3, [0,0,0,0,5], [])
                 ])
                ]).
           % maquina(QT_RECURSO, OPERADORES_NECESSARIOS, MASQUARA_BINARIA)
-teste5_r([ maquina(10,1,[1,0,0,0,0]),
-           maquina(20,2,[1,1,0,0,0]),
-           maquina(15,1,[0,0,1,0,1]),
-           maquina(20,1,[0,1,0,1,1]),
-           maquina(15,3,[1,0,1,0,1]) ]).
-teste5_o([3,1,1,0,3]).
+teste5_r([ maquina(10,1,[1,0,0,0]),
+           maquina(20,2,[1,1,0,0]), % maquina(20,2,[1,0,0,0]) ja da
+           maquina(15,1,[0,0,1,1]),
+           maquina(20,1,[0,1,0,1]),
+           maquina(15,3,[1,0,1,1]) ]). % maquina(15,3,[0,0,1,1]) ja da tbm
+teste5_o([2,1,1,3]).
 teste5 :- teste5_t(X), teste5_r(Y), teste5_o(Z), mp(X, Y, Z).
 %-------------------------------------------------------------------------------
 
@@ -253,28 +253,23 @@ enforce_binary_mask([_Var|Rest], [1|Rest_Mask]):-
 
 % output_recursos_operadores_listas(+Lista_Recursos, +Lista_Rec_Aux,
 %                                   -Lista_Operadores)
-output_recursos_operadores_listas([], [], []).
+output_recursos_operadores_listas([], [], []):- !.
 output_recursos_operadores_listas([0|Rest_Rec],
                                   [_Nop-Mask|Rest_Rec_Aux],
                                   [Lista_Zeros|Lista_Rec_Operadores]):-
   length(Mask, Size_Mask),
   create_list(Size_Mask, 0, Lista_Zeros),
   output_recursos_operadores_listas(Rest_Rec, Rest_Rec_Aux, Lista_Rec_Operadores).
+
 output_recursos_operadores_listas([_Recurso|Rest_Rec],
                                   [Nop-Mask|Rest_Rec_Aux],
                                   [Lista_Op|Lista_Rec_Operadores]):-
-                                    % trace,
 
   length(Mask, Size_Mask),
   length(Lista_Op, Size_Mask),
   domain(Lista_Op, 0, Nop),
   enforce_binary_mask(Lista_Op, Mask),
   sum(Lista_Op, #=, Nop),
-  % write(Nop), nl,
-  % write(Mask), nl,
-  % write(Lista_Op), nl,
-  % notrace,
-
   output_recursos_operadores_listas(Rest_Rec, Rest_Rec_Aux, Lista_Rec_Operadores).
 
 % sum_vertical_elements_in_list(+Lista_Listas_Rec, +Lista_Somas_Verticais)
@@ -335,11 +330,12 @@ parse_tarefas_into_multi([task(S,D,E,Rec-_Oper,Ti)|Rest_Task],
                          [task(S,D,E,Rec,Ti)|Rest_Multi]):-
   parse_tarefas_into_multi(Rest_Task, Rest_Multi).
 
-% parse_tarefas_into_operators(+Lista_Tasks, -Lista_Tasks_Oper)
-parse_tarefas_into_operators([],[]).
-parse_tarefas_into_operators([task(S,D,E,_Rec-Oper,Ti)|Rest_Task],
-                             [task(S,D,E,Oper,Ti)|Rest_Multi]):-
-  parse_tarefas_into_operators(Rest_Task, Rest_Multi).
+% parse_tarefas_into_operators(+Lista_Tasks, -Lista_Tasks_Oper, -Lista_Recs)
+parse_tarefas_into_operators([],[],[]).
+parse_tarefas_into_operators([task(S,D,E,Rec-Oper,Ti)|Rest_Task],
+                             [task(S,D,E,Oper,Ti)|Rest_Multi],
+                             [Rec|Rest_Rec]):-
+  parse_tarefas_into_operators(Rest_Task, Rest_Multi, Rest_Rec).
 
 %  parse_maquinas_into_cumulatives(+Input_Recursos,-Output_Maquinas_Parsed,+Num)
 parse_operators_into_cumulatives([],[],_).
@@ -366,6 +362,26 @@ duplicate_task(S,D,E,[Operator|Rest_Operators], Num_Mach,
 get_all_ops_vars([],[]).
 get_all_ops_vars([task(_,_,_,Oper,_)|Rest_Tasks],[Oper|Rest_Res]):-
   get_all_ops_vars(Rest_Tasks, Rest_Res).
+%-------------------------------------------------------------------------------
+
+%ADDITIONAL RESTRICTIONS--------------------------------------------------------
+% soma_total_workers(+Inputs_Maquinas, +Inputs_Recursos, -Soma)
+soma_total_workers([],[],0):- !.
+soma_total_workers([_|Maquinas],[0|Recursos],Soma):-
+  soma_total_workers(Maquinas,Recursos,Soma).
+soma_total_workers([maquina(_,OP,_)|Maquinas],[_|Recursos],Soma):-
+  soma_total_workers(Maquinas,Recursos,Soma2),
+  Soma #= Soma2 + OP.
+
+% impoe_restricoes_soma(+Lista_Tasks_Ops, +Input_Maquinas, +Input_Recursos)
+impoe_restricoes_soma([],_,[]).
+impoe_restricoes_soma([task(_,_,_,Operadores_A_Usar,_)|Rest_Tasks],
+                      Input_Maquinas,
+                      [Recursos_Tarefa|Rest_Rec]):-
+
+    soma_total_workers(Input_Maquinas,Recursos_Tarefa, Soma),
+    sum(Operadores_A_Usar, #=, Soma),
+    impoe_restricoes_soma(Rest_Tasks, Input_Maquinas, Rest_Rec).
 %-------------------------------------------------------------------------------
 
 
@@ -438,8 +454,20 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
 
 
   %CUMULATIVE WITH OPERATORS----------------------------------------------------
-  parse_tarefas_into_operators(Output_Tarefas_Flat, Output_Tarefas_TEMP),
+  parse_tarefas_into_operators(Output_Tarefas_Flat, Output_Tarefas_TEMP,
+                                                    Recursos_Por_Tarefa),
+
+
+  impoe_restricoes_soma(Output_Tarefas_TEMP, Input_Recursos, Recursos_Por_Tarefa),
+
+  write('Tarefas temp'), nl,
+  write(Output_Tarefas_TEMP), nl,
+  write('Tarefas recs'), nl,
+  write(Recursos_Por_Tarefa), nl,
+  write(Input_Recursos), nl,
+
   parse_tarefas_into_duplicates(Output_Tarefas_TEMP,Output_Tarefas_Final),
+
   append(Output_Tarefas_Final,Output_Tarefas_Final_Flat),
   parse_operators_into_cumulatives(Input_Operadores,Output_Operators_Parsed,1),
   cumulatives(Output_Tarefas_Final_Flat,Output_Operators_Parsed,
