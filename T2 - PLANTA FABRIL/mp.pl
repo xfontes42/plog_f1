@@ -92,14 +92,14 @@ teste5_t(
  [ trabalho(1,[tarefa(1, 5, [2,2,1,0,10], []),
                tarefa(2, 5, [10,20,0,1,2], [1]),
                tarefa(3, 5, [5,5,0,2,0], []),
-               % tarefa(4, 5, [2,2,2,2,4], []),
+               tarefa(4, 5, [2,2,2,2,4], []),
                tarefa(5, 5, [0,0,0,0,10], [1]),
                tarefa(6, 5, [2,3,0,1,1], [2]),
                tarefa(7, 5, [5,5,0,0,3], [])
                ]),
    trabalho(2, [tarefa(1, 10, [0,0,1,2,9], []),
-                % tarefa(2, 5, [4,8,12,7,5], [1]),
-                % tarefa(3, 3, [3,5,6,2,2], [1]),
+                tarefa(2, 5, [4,8,12,7,5], [1]),
+                tarefa(3, 3, [3,5,6,2,2], [1]),
                 tarefa(4, 3, [0,2,10,4,5], []),
                 tarefa(5, 3, [0,1,1,1,1], []),
                 tarefa(6, 3, [0,1,1,1,1], [1]),
@@ -112,7 +112,7 @@ teste5_r([ maquina(10,1,[1,0,0,0]),
            maquina(15,1,[0,0,1,1]),
            maquina(20,1,[0,1,0,1]),
            maquina(15,3,[1,0,1,1]) ]). % maquina(15,3,[0,0,1,1]) ja da tbm
-teste5_o([2,1,1,3]).
+teste5_o([10,10,10,10]).
 teste5 :- teste5_t(X), teste5_r(Y), teste5_o(Z), mp(X, Y, Z).
 %-------------------------------------------------------------------------------
 
@@ -459,12 +459,6 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
 
 
   impoe_restricoes_soma(Output_Tarefas_TEMP, Input_Recursos, Recursos_Por_Tarefa),
-
-  write('Tarefas temp'), nl,
-  write(Output_Tarefas_TEMP), nl,
-  write('Tarefas recs'), nl,
-  write(Recursos_Por_Tarefa), nl,
-  write(Input_Recursos), nl,
 
   parse_tarefas_into_duplicates(Output_Tarefas_TEMP,Output_Tarefas_Final),
 
