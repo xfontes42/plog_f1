@@ -202,12 +202,6 @@ teste7_o([10,10,10,10,20,30]).
 t7 :- teste7_t(X), teste7_r(Y), teste7_o(Z), mp(X, Y, Z).
 %-------------------------------------------------------------------------------
 
-% length(Lista_Op, 5),
-% domain(Lista_Op, 0, 3),
-% enforce_binary_mask(Lista_Op, [1,1,0,0,0]),
-% sum(Lista_Op, #=, 3),
-% labeling([],Lista_Op)
-
 
 %GERADOR_PROBLEMA---------------------------------------------------------------
 % gera_recursos(+Lista,-Lista_Resultado)
