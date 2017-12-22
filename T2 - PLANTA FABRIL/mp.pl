@@ -339,7 +339,6 @@ output_recursos_operadores_listas([0|Rest_Rec],
   length(Mask, Size_Mask),
   create_list(Size_Mask, 0, Lista_Zeros),
   output_recursos_operadores_listas(Rest_Rec, Rest_Rec_Aux, Lista_Rec_Operadores).
-
 output_recursos_operadores_listas([_Recurso|Rest_Rec],
                                   [Nop-Mask|Rest_Rec_Aux],
                                   [Lista_Op|Lista_Rec_Operadores]):-
@@ -569,13 +568,13 @@ mp(Input_Trabalhos, Input_Recursos, Input_Operadores):-
     % , occurrence
     % , time_out(60000, _)
     % , min
-    % , best      %(default)
-    % , leftmost  %(default)
-    % , step      %(default)
+    , best      %(default)
+    , leftmost  %(default)
+    , step      %(default)
     % , down
-    % , up        %(default)
-    % , bab       %(default)
-    , restart
+    , up        %(default)
+    , bab       %(default)
+    % , restart
     % , max_regret
     ],Lista_Labeling),
 
